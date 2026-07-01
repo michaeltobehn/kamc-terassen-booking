@@ -57,7 +57,7 @@ page_start('Übersicht', $user, '');
                 <div class="text-center py-8">
                     <span class="ico mx-auto mb-3"><?= icon('calendar') ?></span>
                     <p class="text-schiefer text-sm">Noch keine anstehenden Buchungen.</p>
-                    <a href="/buchen.php" class="btn-akzent mt-4"><?= icon('plus','h-4 w-4') ?> Jetzt buchen</a>
+                    <a href="/lounge.php" class="btn-akzent mt-4"><?= icon('plus','h-4 w-4') ?> Jetzt buchen</a>
                 </div>
             <?php else: ?>
                 <ul class="divide-y divide-nebel">
@@ -82,7 +82,7 @@ page_start('Übersicht', $user, '');
                 <div class="flex-1"><div class="font-semibold">Kalender</div><div class="text-sm text-schiefer">Freie Slots sehen</div></div>
                 <span class="text-akzent group-hover:translate-x-0.5 transition">→</span>
             </a>
-            <a href="/buchen.php" class="card p-5 flex items-center gap-4 hover:shadow-lg transition group ring-1 ring-akzent/20">
+            <a href="/lounge.php" class="card p-5 flex items-center gap-4 hover:shadow-lg transition group ring-1 ring-akzent/20">
                 <span class="ico-akzent"><?= icon('plus') ?></span>
                 <div class="flex-1"><div class="font-semibold">Neue Buchung</div><div class="text-sm text-schiefer">Tag oder Abend anfragen</div></div>
                 <span class="text-akzent group-hover:translate-x-0.5 transition">→</span>

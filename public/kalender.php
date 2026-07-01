@@ -42,7 +42,7 @@ page_header('Belegungskalender', 'Grün = frei, rot = belegt. Auf einen freien S
                             <div class="text-xs font-ui font-semibold mb-1" :class="cell.today ? 'text-navy' : 'text-schiefer'" x-text="cell.day"></div>
                             <div class="space-y-1">
                                 <template x-for="slot in ['tag','abend']" :key="slot">
-                                    <a :href="cell.status[slot]==='frei' ? ('/buchen.php?date='+cell.date+'&slot='+slot) : null"
+                                    <a :href="cell.status[slot]==='frei' ? ('/lounge.php?date='+cell.date+'&slot='+slot) : null"
                                        class="slot-chip"
                                        :class="chipClass(cell.status[slot])"
                                        x-text="(slot==='tag'?'Tag':'Abend')+' · '+labelOf(cell.status[slot])"></a>

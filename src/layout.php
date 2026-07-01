@@ -212,7 +212,7 @@ function render_app_header(array $user, string $active): void
             </nav>
 
             <div class="ml-auto flex items-center gap-2 sm:gap-3">
-                <a href="/buchen.php" class="btn-akzent btn-sm hidden sm:inline-flex"><?= icon('plus', 'h-4 w-4') ?> Buchen</a>
+                <a href="/lounge.php" class="btn-akzent btn-sm hidden sm:inline-flex"><?= icon('plus', 'h-4 w-4') ?> Buchen</a>
                 <!-- User-Menü -->
                 <div class="relative hidden lg:block" x-data="{o:false}" @click.outside="o=false">
                     <button @click="o=!o" class="nav-link flex items-center gap-2">
@@ -230,7 +230,7 @@ function render_app_header(array $user, string $active): void
 
         <!-- Mobile -->
         <nav x-show="mobile" x-cloak class="lg:hidden border-t border-white/10 px-4 pb-4 pt-2 space-y-0.5">
-            <a href="/buchen.php" class="btn-akzent w-full mb-2"><?= icon('plus', 'h-4 w-4') ?> Buchen</a>
+            <a href="/lounge.php" class="btn-akzent w-full mb-2"><?= icon('plus', 'h-4 w-4') ?> Buchen</a>
             <?php foreach (array_merge($g['primary'], $g['info']) as $it) echo $link($it, $active); ?>
             <?php if ($g['hafen']): ?><div class="pt-2 mt-1 border-t border-white/10 text-[11px] uppercase tracking-wide text-white/50 px-3 py-1">Hafenmeisterei</div>
                 <?php foreach ($g['hafen'] as $it) echo $link($it, $active); endif; ?>
@@ -263,7 +263,7 @@ function render_public_header(?array $user): void
                 <?php else: ?>
                     <a href="/login.php" class="nav-link">Anmelden</a>
                 <?php endif; ?>
-                <a href="/buchen.php" class="btn-akzent btn-sm">Jetzt buchen</a>
+                <a href="/lounge.php" class="btn-akzent btn-sm">Jetzt buchen</a>
             </div>
         </div>
     </header>

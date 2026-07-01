@@ -28,7 +28,7 @@ page_start('Willkommen', $user, '', 'public');
                 Zwei feste Slots pro Tag, bis zu 16 Personen, <strong class="text-white">kostenlos für Mitglieder</strong>.
             </p>
             <div class="mt-8 flex flex-wrap gap-3">
-                <a href="/buchen.php" class="btn-akzent text-base px-6 py-3"><?= icon('plus','h-5 w-5') ?> Jetzt buchen</a>
+                <a href="/lounge.php" class="btn-akzent text-base px-6 py-3"><?= icon('plus','h-5 w-5') ?> Jetzt buchen</a>
                 <a href="#angebot" class="btn text-base px-6 py-3 bg-white/10 text-white hover:bg-white/20">Angebot ansehen</a>
             </div>
             <div class="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/70">
@@ -82,7 +82,7 @@ page_start('Willkommen', $user, '', 'public');
                     </template>
                 </ul>
                 <p x-show="!days.length && !loading" x-cloak class="mt-4 text-sm text-white/70">Aktuell keine freien Tage im Fenster.</p>
-                <a href="/buchen.php" class="btn-akzent btn-sm mt-5">Termin sichern</a>
+                <a href="/lounge.php" class="btn-akzent btn-sm mt-5">Termin sichern</a>
             </div>
         </div>
     </div>
@@ -157,7 +157,7 @@ page_start('Willkommen', $user, '', 'public');
             <h2 class="text-3xl sm:text-4xl font-display font-semibold text-white">Bereit für deinen Termin an Deck?</h2>
             <p class="mt-3 lead text-white/85 max-w-xl mx-auto">Melde dich an und sichere dir deinen Slot in der Lounge oben.</p>
             <div class="mt-7 flex flex-wrap gap-3 justify-center">
-                <a href="/buchen.php" class="btn-akzent text-base px-6 py-3"><?= icon('plus','h-5 w-5') ?> Jetzt buchen</a>
+                <a href="/lounge.php" class="btn-akzent text-base px-6 py-3"><?= icon('plus','h-5 w-5') ?> Jetzt buchen</a>
                 <?php if (!$user): ?><a href="/login.php" class="btn text-base px-6 py-3 bg-white/10 text-white hover:bg-white/20">Anmelden</a><?php endif; ?>
             </div>
         </div>

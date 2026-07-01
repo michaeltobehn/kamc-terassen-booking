@@ -71,4 +71,13 @@
   /* Icon-Wrapper */
   .ico { @apply inline-flex h-10 w-10 items-center justify-center rounded-lg bg-navy/5 text-navy; }
   .ico-akzent { @apply inline-flex h-10 w-10 items-center justify-center rounded-lg bg-akzent/10 text-akzent; }
+
+  /* Airbnb-artige Detailseite */
+  .gallery-tile { @apply relative flex items-end overflow-hidden bg-gradient-to-br from-navy via-navy-800 to-himmel/50; }
+  .gallery-cap  { @apply relative z-10 m-3 rounded-md bg-navy-950/55 px-2.5 py-1 text-xs font-ui font-medium text-white backdrop-blur-sm; }
+  .book-card    { @apply rounded-xl2 bg-white p-6 ring-1 ring-navy/10 shadow-[0_6px_28px_-8px_rgba(3,0,83,0.25)]; }
+  .book-field   { @apply w-full bg-transparent px-3.5 py-2.5 text-sm text-navy-950 focus:outline-none; }
+  .amenity-row  { @apply flex items-start gap-3 py-3; }
+  .divider-y    { @apply border-t border-nebel my-8; }
+  .pill         { @apply inline-flex items-center gap-1.5 rounded-full bg-nebel/70 px-3 py-1.5 text-sm text-navy-950 ring-1 ring-navy/5; }
 }
