@@ -19,6 +19,14 @@ function db(): PDO
     $db  = $cfg['db'];
 
     $dsn = sprintf('mysql:host=%s;dbname=%s;charset=%s', $db['host'], $db['name'], $db['charset']);
+    // Optionaler Port (z. B. MAMP lokal auf 8889) / Unix-Socket — nur anhaengen,
+    // wenn in config gesetzt. Ohne diese Keys bleibt das Verhalten unveraendert.
+    if (!empty($db['port'])) {
+        $dsn .= ';port=' . (int) $db['port'];
+    }
+    if (!empty($db['socket'])) {
+        $dsn .= ';unix_socket=' . $db['socket'];
+    }
 
     $pdo = new PDO($dsn, $db['user'], $db['pass'], [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
