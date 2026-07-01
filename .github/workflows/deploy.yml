@@ -1,0 +1,47 @@
+name: Deploy to Strato (FTP)
+
+# Auto-Deploy bei Push auf main. Manuell startbar ueber "Run workflow".
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Tailwind bauen
+        run: |
+          npm install
+          npm run build:css
+
+      - name: FTP-Deploy nach Strato
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:   ${{ secrets.FTP_SERVER }}     # z.B. ftp.strato.de
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # Ziel-Ordner auf dem Server anpassen (Strato-Webroot):
+          server-dir: ./
+          # Nicht hochladen (Secrets, Build-Input, Repo-Meta):
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            config.php
+            config.sample.php
+            **/*.md
+            docs/**
+            .github/**
+            build/**
+            tailwind.config.js
+            package.json
+            package-lock.json

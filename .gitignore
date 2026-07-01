@@ -1,0 +1,21 @@
+# --- Secrets / lokale Konfiguration (NIE committen) ---
+/config.php
+.env
+.env.*
+
+# --- Abhängigkeiten ---
+/vendor/
+/node_modules/
+
+# --- Betriebssystem / Editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# --- Logs / Temp ---
+*.log
+/tmp/
+
+# --- Lokale Referenz/Starter (nicht Teil des Repos) ---
+/_docs/

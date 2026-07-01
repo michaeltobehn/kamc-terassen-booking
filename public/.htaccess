@@ -1,0 +1,7 @@
+# Verzeichnislisting aus
+Options -Indexes
+
+# Sensible Dateien blocken (falls doch mal im Webroot landen)
+<FilesMatch "(^\.|\.(sql|md|json|lock)$|sample\.php$)">
+    Require all denied
+</FilesMatch>

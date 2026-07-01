@@ -1,0 +1,175 @@
+<!--
+  KAMC „Lounge oben" — E-Mail-Vorlagen (HTML)
+  ------------------------------------------------------------------
+  • Email-sicher: Tabellen-Layout + Inline-Styles (kein <style> für die Mails selbst).
+  • Hülle (Header/Footer) ist bei allen Mails identisch -> in PHP als ein Layout-Partial,
+    Body je Mail-Typ als eigenes Partial. Blöcke sind mit <!-- ===== EMAIL: ... ===== --> markiert.
+  • Platzhalter im {{...}}-Format vom Server ersetzen.
+  • FARBEN: die Hexwerte unten durch die echten KAMC-Global-Colors (Elementor) ersetzen.
+        Navy   #16313D   (Header, Headlines, Button)
+        Akzent #C0622E   (Eyebrow/Akzent, warm)
+        Ink    #1F2A2E   Muted #5B6B70   Linie #DDE3E2   Panel #F2F4F3
+  • Die hellgraue Seite + die grauen Beschriftungen über den Mails sind NUR Vorschau-Rahmen,
+    nicht Teil der E-Mail.
+-->
+<div style="font-family:Arial,Helvetica,sans-serif;background:#E7EAE9;padding:24px 0;">
+
+<!-- =================================================================== -->
+<!-- ===== EMAIL 1: Anfrage eingegangen (create -> pending) ===== -->
+<!-- =================================================================== -->
+<p style="text-align:center;color:#5B6B70;font-size:12px;margin:0 0 6px;">EMAIL 1 — Anfrage eingegangen</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 36px;"><tr><td align="center">
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:#FFFFFF;border:1px solid #DDE3E2;border-radius:8px;overflow:hidden;">
+    <tr><td style="background:#16313D;padding:18px 28px;">
+      <img src="https://kamc.koeln/wp-content/uploads/2024/11/Logo-bunt_500x500.png" width="52" height="52" alt="KAMC e.V." style="display:block;border:0;outline:none;">
+    </td></tr>
+    <tr><td style="padding:28px;color:#1F2A2E;font-size:15px;line-height:1.55;">
+      <p style="margin:0 0 6px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#C0622E;font-weight:bold;">Anfrage eingegangen</p>
+      <h1 style="margin:0 0 14px;font-size:22px;line-height:1.25;color:#16313D;">Wir haben deine Anfrage</h1>
+      <p style="margin:0 0 16px;">Ahoi {{name}}, deine Buchungsanfrage für die <strong>Lounge oben</strong> ist eingegangen. Die Hafenmeisterei prüft sie und gibt dir Bescheid — die verbindliche Bestätigung kommt per separater Mail.</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 18px;">
+        <tr><td style="padding:7px 0;border-bottom:1px solid #DDE3E2;color:#5B6B70;width:130px;">Datum</td><td style="padding:7px 0;border-bottom:1px solid #DDE3E2;">{{datum}}</td></tr>
+        <tr><td style="padding:7px 0;border-bottom:1px solid #DDE3E2;color:#5B6B70;">Slot</td><td style="padding:7px 0;border-bottom:1px solid #DDE3E2;">{{slot}}</td></tr>
+        <tr><td style="padding:7px 0;border-bottom:1px solid #DDE3E2;color:#5B6B70;">Personen</td><td style="padding:7px 0;border-bottom:1px solid #DDE3E2;">{{personenzahl}}</td></tr>
+        <tr><td style="padding:7px 0;color:#5B6B70;">Buchungs-Nr.</td><td style="padding:7px 0;">{{buchungsnummer}}</td></tr>
+      </table>
+      <p style="margin:0 0 18px;font-size:14px;color:#5B6B70;">Status: <strong style="color:#1F2A2E;">in Prüfung</strong></p>
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:#16313D;border-radius:6px;">
+        <a href="{{meine_buchungen_url}}" style="display:inline-block;padding:11px 22px;color:#FFFFFF;font-size:14px;font-weight:bold;text-decoration:none;">Meine Buchungen ansehen</a>
+      </td></tr></table>
+    </td></tr>
+    <tr><td style="background:#F2F4F3;border-top:1px solid #DDE3E2;padding:16px 28px;color:#5B6B70;font-size:12px;line-height:1.5;">
+      Kölner Autbord- und Motoryachtclub e.V. · Bayenstraße 28a · 50678 Köln<br>
+      <a href="https://kamc.koeln" style="color:#16313D;text-decoration:none;">kamc.koeln</a> · <a href="{{meine_buchungen_url}}" style="color:#16313D;text-decoration:none;">Meine Buchungen</a><br>
+      Diese E-Mail wurde automatisch erzeugt.
+    </td></tr>
+  </table>
+</td></tr></table>
+
+<!-- =================================================================== -->
+<!-- ===== EMAIL 2: Buchungsbestätigung (pending -> confirmed) ===== -->
+<!-- =================================================================== -->
+<p style="text-align:center;color:#5B6B70;font-size:12px;margin:0 0 6px;">EMAIL 2 — Buchungsbestätigung (Anhänge: Hausordnung-PDF + .ics)</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 36px;"><tr><td align="center">
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:#FFFFFF;border:1px solid #DDE3E2;border-radius:8px;overflow:hidden;">
+    <tr><td style="background:#16313D;padding:18px 28px;">
+      <img src="https://kamc.koeln/wp-content/uploads/2024/11/Logo-bunt_500x500.png" width="52" height="52" alt="KAMC e.V." style="display:block;border:0;outline:none;">
+    </td></tr>
+    <tr><td style="padding:28px;color:#1F2A2E;font-size:15px;line-height:1.55;">
+      <p style="margin:0 0 6px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#C0622E;font-weight:bold;">Buchungsbestätigung</p>
+      <h1 style="margin:0 0 14px;font-size:22px;line-height:1.25;color:#16313D;">Deine Buchung ist bestätigt</h1>
+      <p style="margin:0 0 16px;">Ahoi {{name}}, die Hafenmeisterei hat deine Buchung der <strong>Lounge oben</strong> bestätigt. Hier die Eckdaten:</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 18px;">
+        <tr><td style="padding:7px 0;border-bottom:1px solid #DDE3E2;color:#5B6B70;width:130px;">Datum</td><td style="padding:7px 0;border-bottom:1px solid #DDE3E2;">{{datum}}</td></tr>
+        <tr><td style="padding:7px 0;border-bottom:1px solid #DDE3E2;color:#5B6B70;">Slot</td><td style="padding:7px 0;border-bottom:1px solid #DDE3E2;">{{slot}}</td></tr>
+        <tr><td style="padding:7px 0;border-bottom:1px solid #DDE3E2;color:#5B6B70;">Personen</td><td style="padding:7px 0;border-bottom:1px solid #DDE3E2;">{{personenzahl}}</td></tr>
+        <tr><td style="padding:7px 0;border-bottom:1px solid #DDE3E2;color:#5B6B70;">Anlass</td><td style="padding:7px 0;border-bottom:1px solid #DDE3E2;">{{anlass}}</td></tr>
+        <tr><td style="padding:7px 0;color:#5B6B70;">Buchungs-Nr.</td><td style="padding:7px 0;">{{buchungsnummer}}</td></tr>
+      </table>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 18px;background:#F2F4F3;border-radius:6px;"><tr><td style="padding:14px 16px;">
+        <p style="margin:0 0 4px;font-weight:bold;color:#16313D;">Schlüssel &amp; Begehung</p>
+        <p style="margin:0;font-size:14px;">Schlüsselübergabe und -rückgabe laufen über die Hafenmeisterei (RSK), jeweils mit kurzer Begehung. Bitte rechtzeitig melden: {{hafenmeister_kontakt}}.</p>
+      </td></tr></table>
+      <p style="margin:0 0 6px;font-weight:bold;color:#16313D;">Bitte beachten</p>
+      <ul style="margin:0 0 18px;padding-left:18px;">
+        <li>Keine Musik / keine Lautsprecher.</li>
+        <li>Max. 16 Personen · Selbstversorgung (Essen &amp; Getränke mitbringen).</li>
+        <li>Grill inkl. Ersatz-Gasflasche ist gestellt — nach Nutzung gründlich reinigen.</li>
+        <li>Kühlschrank leeren, kehren, keine Brandflecken — wird bei der Abnahme geprüft.</li>
+      </ul>
+      <p style="margin:0 0 18px;">Die <strong>Hausordnung</strong> liegt als PDF im Anhang, dazu eine Kalenderdatei (.ics) zum Eintragen.</p>
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:#16313D;border-radius:6px;">
+        <a href="{{meine_buchungen_url}}" style="display:inline-block;padding:11px 22px;color:#FFFFFF;font-size:14px;font-weight:bold;text-decoration:none;">Meine Buchungen ansehen</a>
+      </td></tr></table>
+      <p style="margin:18px 0 0;font-size:13px;color:#5B6B70;">Pläne geändert? Bis {{cutoff}} kannst du unter „Meine Buchungen" kostenfrei stornieren.</p>
+    </td></tr>
+    <tr><td style="background:#F2F4F3;border-top:1px solid #DDE3E2;padding:16px 28px;color:#5B6B70;font-size:12px;line-height:1.5;">
+      Kölner Autbord- und Motoryachtclub e.V. · Bayenstraße 28a · 50678 Köln<br>
+      <a href="https://kamc.koeln" style="color:#16313D;text-decoration:none;">kamc.koeln</a> · <a href="{{meine_buchungen_url}}" style="color:#16313D;text-decoration:none;">Meine Buchungen</a><br>
+      Diese E-Mail wurde automatisch erzeugt.
+    </td></tr>
+  </table>
+</td></tr></table>
+
+<!-- =================================================================== -->
+<!-- ===== EMAIL 3: Buchung abgelehnt (pending -> rejected) ===== -->
+<!-- =================================================================== -->
+<p style="text-align:center;color:#5B6B70;font-size:12px;margin:0 0 6px;">EMAIL 3 — Buchung abgelehnt</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 36px;"><tr><td align="center">
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:#FFFFFF;border:1px solid #DDE3E2;border-radius:8px;overflow:hidden;">
+    <tr><td style="background:#16313D;padding:18px 28px;">
+      <img src="https://kamc.koeln/wp-content/uploads/2024/11/Logo-bunt_500x500.png" width="52" height="52" alt="KAMC e.V." style="display:block;border:0;outline:none;">
+    </td></tr>
+    <tr><td style="padding:28px;color:#1F2A2E;font-size:15px;line-height:1.55;">
+      <p style="margin:0 0 6px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#C0622E;font-weight:bold;">Buchung abgelehnt</p>
+      <h1 style="margin:0 0 14px;font-size:22px;line-height:1.25;color:#16313D;">Das hat leider nicht geklappt</h1>
+      <p style="margin:0 0 16px;">Ahoi {{name}}, deine Anfrage für die <strong>Lounge oben</strong> am {{datum}} konnte nicht bestätigt werden.</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 18px;background:#F2F4F3;border-radius:6px;"><tr><td style="padding:14px 16px;">
+        <p style="margin:0 0 4px;font-weight:bold;color:#16313D;">Grund</p>
+        <p style="margin:0;font-size:14px;">{{ablehnungsgrund}}</p>
+      </td></tr></table>
+      <p style="margin:0 0 18px;">Schau gern nach einem anderen Termin — der Kalender zeigt dir die freien Tage.</p>
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:#16313D;border-radius:6px;">
+        <a href="{{kalender_url}}" style="display:inline-block;padding:11px 22px;color:#FFFFFF;font-size:14px;font-weight:bold;text-decoration:none;">Anderen Termin wählen</a>
+      </td></tr></table>
+    </td></tr>
+    <tr><td style="background:#F2F4F3;border-top:1px solid #DDE3E2;padding:16px 28px;color:#5B6B70;font-size:12px;line-height:1.5;">
+      Kölner Autbord- und Motoryachtclub e.V. · Bayenstraße 28a · 50678 Köln<br>
+      <a href="https://kamc.koeln" style="color:#16313D;text-decoration:none;">kamc.koeln</a> · <a href="{{meine_buchungen_url}}" style="color:#16313D;text-decoration:none;">Meine Buchungen</a><br>
+      Diese E-Mail wurde automatisch erzeugt.
+    </td></tr>
+  </table>
+</td></tr></table>
+
+<!-- =================================================================== -->
+<!-- ===== EMAIL 4: Abnahme erledigt (inspection passed) ===== -->
+<!-- =================================================================== -->
+<p style="text-align:center;color:#5B6B70;font-size:12px;margin:0 0 6px;">EMAIL 4 — Abnahme erledigt</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 36px;"><tr><td align="center">
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:#FFFFFF;border:1px solid #DDE3E2;border-radius:8px;overflow:hidden;">
+    <tr><td style="background:#16313D;padding:18px 28px;">
+      <img src="https://kamc.koeln/wp-content/uploads/2024/11/Logo-bunt_500x500.png" width="52" height="52" alt="KAMC e.V." style="display:block;border:0;outline:none;">
+    </td></tr>
+    <tr><td style="padding:28px;color:#1F2A2E;font-size:15px;line-height:1.55;">
+      <p style="margin:0 0 6px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#C0622E;font-weight:bold;">Abnahme</p>
+      <h1 style="margin:0 0 14px;font-size:22px;line-height:1.25;color:#16313D;">Alles sauber — danke!</h1>
+      <p style="margin:0 0 16px;">Ahoi {{name}}, die Begehung nach deiner Nutzung der <strong>Lounge oben</strong> am {{datum}} ist erledigt: alles in Ordnung, für dich gibt es nichts weiter zu tun.</p>
+      <p style="margin:0 0 18px;">Danke, dass du alles ordentlich hinterlassen hast — bis zum nächsten Mal.</p>
+      <p style="margin:0;font-size:13px;color:#5B6B70;">Buchung {{buchungsnummer}} · {{datum}}</p>
+    </td></tr>
+    <tr><td style="background:#F2F4F3;border-top:1px solid #DDE3E2;padding:16px 28px;color:#5B6B70;font-size:12px;line-height:1.5;">
+      Kölner Autbord- und Motoryachtclub e.V. · Bayenstraße 28a · 50678 Köln<br>
+      <a href="https://kamc.koeln" style="color:#16313D;text-decoration:none;">kamc.koeln</a> · <a href="{{meine_buchungen_url}}" style="color:#16313D;text-decoration:none;">Meine Buchungen</a><br>
+      Diese E-Mail wurde automatisch erzeugt.
+    </td></tr>
+  </table>
+</td></tr></table>
+
+<!-- =================================================================== -->
+<!-- ===== EMAIL 5: Abnahme – Nacharbeit nötig (inspection rework) ===== -->
+<!-- =================================================================== -->
+<p style="text-align:center;color:#5B6B70;font-size:12px;margin:0 0 6px;">EMAIL 5 — Nacharbeit nötig</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 12px;"><tr><td align="center">
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:#FFFFFF;border:1px solid #DDE3E2;border-radius:8px;overflow:hidden;">
+    <tr><td style="background:#16313D;padding:18px 28px;">
+      <img src="https://kamc.koeln/wp-content/uploads/2024/11/Logo-bunt_500x500.png" width="52" height="52" alt="KAMC e.V." style="display:block;border:0;outline:none;">
+    </td></tr>
+    <tr><td style="padding:28px;color:#1F2A2E;font-size:15px;line-height:1.55;">
+      <p style="margin:0 0 6px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#C0622E;font-weight:bold;">Abnahme — Nacharbeit</p>
+      <h1 style="margin:0 0 14px;font-size:22px;line-height:1.25;color:#16313D;">Bitte noch einmal nacharbeiten</h1>
+      <p style="margin:0 0 16px;">Ahoi {{name}}, bei der Begehung nach deiner Nutzung der <strong>Lounge oben</strong> am {{datum}} ist noch etwas offen:</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 18px;background:#F2F4F3;border-radius:6px;"><tr><td style="padding:14px 16px;border-left:3px solid #C0622E;">
+        <p style="margin:0;font-size:14px;">{{beanstandung}}</p>
+      </td></tr></table>
+      <p style="margin:0 0 18px;">Bitte kümmere dich darum und melde dich bei der Hafenmeisterei für eine kurze erneute Begehung: {{hafenmeister_kontakt}}.</p>
+      <p style="margin:0;font-size:13px;color:#5B6B70;">Buchung {{buchungsnummer}} · {{datum}}</p>
+    </td></tr>
+    <tr><td style="background:#F2F4F3;border-top:1px solid #DDE3E2;padding:16px 28px;color:#5B6B70;font-size:12px;line-height:1.5;">
+      Kölner Autbord- und Motoryachtclub e.V. · Bayenstraße 28a · 50678 Köln<br>
+      <a href="https://kamc.koeln" style="color:#16313D;text-decoration:none;">kamc.koeln</a> · <a href="{{meine_buchungen_url}}" style="color:#16313D;text-decoration:none;">Meine Buchungen</a><br>
+      Diese E-Mail wurde automatisch erzeugt.
+    </td></tr>
+  </table>
+</td></tr></table>
+
+</div>

@@ -1,0 +1,134 @@
+KAMC „Lounge oben" — E-Mail-Vorlagen (Plain-Text)
+==================================================
+Plain-Text-Alternative zur HTML-Version (multipart/alternative). Platzhalter {{...}}
+serverseitig ersetzen. Zeiten in Europe/Berlin. Eine Leerzeile = Absatz.
+
+
+------------------------------------------------------------------
+EMAIL 1 — Anfrage eingegangen   (Betreff: Anfrage eingegangen — Lounge oben am {{datum}})
+------------------------------------------------------------------
+Ahoi {{name}},
+
+deine Buchungsanfrage für die Lounge oben ist eingegangen. Die Hafenmeisterei
+prüft sie und gibt dir Bescheid — die verbindliche Bestätigung kommt per
+separater Mail.
+
+  Datum:        {{datum}}
+  Slot:         {{slot}}
+  Personen:     {{personenzahl}}
+  Buchungs-Nr.: {{buchungsnummer}}
+
+Status: in Prüfung.
+
+Meine Buchungen: {{meine_buchungen_url}}
+
+--
+Kölner Autbord- und Motoryachtclub e.V. · Bayenstraße 28a · 50678 Köln
+kamc.koeln · Diese E-Mail wurde automatisch erzeugt.
+
+
+------------------------------------------------------------------
+EMAIL 2 — Buchungsbestätigung   (Betreff: Deine Buchung der Lounge oben ist bestätigt — {{datum}})
+Anhänge: Hausordnung-PDF + Kalender (.ics)
+------------------------------------------------------------------
+Ahoi {{name}},
+
+die Hafenmeisterei hat deine Buchung der Lounge oben bestätigt. Hier die Eckdaten:
+
+  Datum:        {{datum}}
+  Slot:         {{slot}}
+  Personen:     {{personenzahl}}
+  Anlass:       {{anlass}}
+  Buchungs-Nr.: {{buchungsnummer}}
+
+SCHLÜSSEL & BEGEHUNG
+Schlüsselübergabe und -rückgabe laufen über die Hafenmeisterei (RSK), jeweils
+mit kurzer Begehung. Bitte rechtzeitig melden: {{hafenmeister_kontakt}}.
+
+BITTE BEACHTEN
+- Keine Musik / keine Lautsprecher.
+- Max. 16 Personen · Selbstversorgung (Essen & Getränke mitbringen).
+- Grill inkl. Ersatz-Gasflasche ist gestellt — nach Nutzung gründlich reinigen.
+- Kühlschrank leeren, kehren, keine Brandflecken — wird bei der Abnahme geprüft.
+
+Die Hausordnung liegt als PDF im Anhang, dazu eine Kalenderdatei (.ics).
+
+Meine Buchungen: {{meine_buchungen_url}}
+Pläne geändert? Bis {{cutoff}} kannst du dort kostenfrei stornieren.
+
+--
+Kölner Autbord- und Motoryachtclub e.V. · Bayenstraße 28a · 50678 Köln
+kamc.koeln · Diese E-Mail wurde automatisch erzeugt.
+
+
+------------------------------------------------------------------
+EMAIL 3 — Buchung abgelehnt   (Betreff: Deine Anfrage für die Lounge oben am {{datum}})
+------------------------------------------------------------------
+Ahoi {{name}},
+
+deine Anfrage für die Lounge oben am {{datum}} konnte nicht bestätigt werden.
+
+Grund: {{ablehnungsgrund}}
+
+Schau gern nach einem anderen Termin — der Kalender zeigt dir die freien Tage:
+{{kalender_url}}
+
+--
+Kölner Autbord- und Motoryachtclub e.V. · Bayenstraße 28a · 50678 Köln
+kamc.koeln · Diese E-Mail wurde automatisch erzeugt.
+
+
+------------------------------------------------------------------
+EMAIL 4 — Abnahme erledigt   (Betreff: Abnahme erledigt — danke!)
+------------------------------------------------------------------
+Ahoi {{name}},
+
+die Begehung nach deiner Nutzung der Lounge oben am {{datum}} ist erledigt:
+alles in Ordnung, für dich gibt es nichts weiter zu tun.
+
+Danke, dass du alles ordentlich hinterlassen hast — bis zum nächsten Mal.
+
+Buchung {{buchungsnummer}} · {{datum}}
+
+--
+Kölner Autbord- und Motoryachtclub e.V. · Bayenstraße 28a · 50678 Köln
+kamc.koeln · Diese E-Mail wurde automatisch erzeugt.
+
+
+------------------------------------------------------------------
+EMAIL 5 — Nacharbeit nötig   (Betreff: Bitte noch einmal nacharbeiten — Lounge oben)
+------------------------------------------------------------------
+Ahoi {{name}},
+
+bei der Begehung nach deiner Nutzung der Lounge oben am {{datum}} ist noch
+etwas offen:
+
+  {{beanstandung}}
+
+Bitte kümmere dich darum und melde dich bei der Hafenmeisterei für eine kurze
+erneute Begehung: {{hafenmeister_kontakt}}.
+
+Buchung {{buchungsnummer}} · {{datum}}
+
+--
+Kölner Autbord- und Motoryachtclub e.V. · Bayenstraße 28a · 50678 Köln
+kamc.koeln · Diese E-Mail wurde automatisch erzeugt.
+
+
+------------------------------------------------------------------
+EMAIL 6 (intern an Hafenmeisterei) — Neue Buchungsanfrage
+(Betreff: Neue Buchungsanfrage Lounge oben — {{datum}}, {{name}})
+------------------------------------------------------------------
+Neue Buchungsanfrage zur Prüfung:
+
+  Mitglied:     {{name}} ({{mitglied_kontakt}})
+  Datum:        {{datum}}
+  Slot:         {{slot}}
+  Personen:     {{personenzahl}}
+  Anlass:       {{anlass}}
+  Buchungs-Nr.: {{buchungsnummer}}
+
+Genehmigen / ablehnen: {{admin_buchung_url}}
+
+--
+Automatische Benachrichtigung · KAMC Buchungstool „Lounge oben"
