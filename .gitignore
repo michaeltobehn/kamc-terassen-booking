@@ -22,3 +22,9 @@ Thumbs.db
 
 # --- Lokale Editor-/Preview-Konfiguration ---
 /.claude/
+
+# --- Upload-Inhalte (nicht committen, Ordner via .gitkeep behalten) ---
+/public/uploads/*
+!/public/uploads/abnahmen/
+/public/uploads/abnahmen/*
+!/public/uploads/abnahmen/.gitkeep

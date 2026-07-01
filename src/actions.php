@@ -200,3 +200,110 @@ function delete_amenity(PDO $pdo, int $id): bool
     $stmt->execute([':id' => $id]);
     return true;
 }
+
+/* ---- Abnahme: Foto-Dokumentation ---- */
+
+const INSPECTION_UPLOAD_DIR = __DIR__ . '/../public/uploads/abnahmen';
+const INSPECTION_UPLOAD_URL = '/uploads/abnahmen';
+const INSPECTION_MAX_BYTES   = 15728640; // 15 MB pro Datei
+
+/**
+ * Speichert hochgeladene Abnahme-Fotos (aus $_FILES['fotos']) resized als WebP
+ * und verknüpft sie mit der Buchung. EXIF-Orientierung wird berücksichtigt,
+ * Metadaten/GPS fallen durch das Re-Encoding weg.
+ *
+ * @return array{saved:int,errors:string[]}
+ */
+function store_inspection_photos(PDO $pdo, int $bookingId, array $files, int $uploaderId): array
+{
+    $errors = [];
+    $saved  = 0;
+    if (empty($files['name']) || !is_array($files['name'])) {
+        return ['saved' => 0, 'errors' => []];
+    }
+    if (!is_dir(INSPECTION_UPLOAD_DIR)) {
+        @mkdir(INSPECTION_UPLOAD_DIR, 0775, true);
+    }
+    $stmt = $pdo->prepare('INSERT INTO inspection_photos (booking_id, file_path, uploaded_by) VALUES (:b, :p, :u)');
+
+    $count = count($files['name']);
+    for ($i = 0; $i < $count; $i++) {
+        $err = $files['error'][$i] ?? UPLOAD_ERR_NO_FILE;
+        if ($err === UPLOAD_ERR_NO_FILE) {
+            continue;
+        }
+        if ($err !== UPLOAD_ERR_OK) {
+            $errors[] = 'Ein Foto konnte nicht hochgeladen werden (evtl. zu groß).';
+            continue;
+        }
+        $tmp = $files['tmp_name'][$i];
+        if (!is_uploaded_file($tmp)) {
+            $errors[] = 'Ungültiger Upload.';
+            continue;
+        }
+        if (($files['size'][$i] ?? 0) > INSPECTION_MAX_BYTES) {
+            $errors[] = 'Foto zu groß (max. 15 MB).';
+            continue;
+        }
+        $img = load_uploaded_image($tmp);
+        if (!$img) {
+            $errors[] = 'Nur JPG, PNG oder WebP erlaubt.';
+            continue;
+        }
+        $img  = downscale_image($img, 1600);
+        $name = bin2hex(random_bytes(8)) . '.webp';
+        $abs  = INSPECTION_UPLOAD_DIR . '/' . $name;
+        if (!imagewebp($img, $abs, 78)) {
+            imagedestroy($img);
+            $errors[] = 'Foto konnte nicht gespeichert werden.';
+            continue;
+        }
+        imagedestroy($img);
+        $stmt->execute([':b' => $bookingId, ':p' => INSPECTION_UPLOAD_URL . '/' . $name, ':u' => $uploaderId]);
+        $saved++;
+    }
+    return ['saved' => $saved, 'errors' => $errors];
+}
+
+/** Lädt ein Upload-Bild als GD-Ressource, korrigiert EXIF-Orientierung (JPEG). */
+function load_uploaded_image(string $tmp): mixed
+{
+    $info = @getimagesize($tmp);
+    if (!$info) {
+        return null;
+    }
+    $img = match ($info[2]) {
+        IMAGETYPE_JPEG => @imagecreatefromjpeg($tmp),
+        IMAGETYPE_PNG  => @imagecreatefrompng($tmp),
+        IMAGETYPE_WEBP => function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($tmp) : null,
+        default        => null,
+    };
+    if (!$img) {
+        return null;
+    }
+    if ($info[2] === IMAGETYPE_JPEG && function_exists('exif_read_data')) {
+        $exif = @exif_read_data($tmp);
+        $o = (int) ($exif['Orientation'] ?? 0);
+        if ($o === 3)      { $img = imagerotate($img, 180, 0); }
+        elseif ($o === 6)  { $img = imagerotate($img, -90, 0); }
+        elseif ($o === 8)  { $img = imagerotate($img, 90, 0); }
+    }
+    return $img;
+}
+
+/** Skaliert ein GD-Bild auf max. Kantenlänge herunter (gibt neue Ressource zurück). */
+function downscale_image(mixed $img, int $max): mixed
+{
+    $w = imagesx($img);
+    $h = imagesy($img);
+    if (max($w, $h) <= $max) {
+        return $img;
+    }
+    $r  = $max / max($w, $h);
+    $nw = (int) round($w * $r);
+    $nh = (int) round($h * $r);
+    $dst = imagecreatetruecolor($nw, $nh);
+    imagecopyresampled($dst, $img, 0, 0, 0, 0, $nw, $nh, $w, $h);
+    imagedestroy($img);
+    return $dst;
+}

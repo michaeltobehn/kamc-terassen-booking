@@ -94,6 +94,30 @@ page_start('Übersicht', $user, '');
         </div>
     </div>
 
+    <!-- Nächste bestätigte Termine (mit Mitgliedsnamen) -->
+    <div class="card p-6 mt-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold">Nächste bestätigte Termine</h2>
+            <a href="/hafenmeister/belegung.php?status=confirmed" class="text-sm text-akzent hover:underline">Belegung</a>
+        </div>
+        <?php if (!$upcoming): ?>
+            <p class="text-schiefer text-sm">Keine bestätigten Termine in nächster Zeit.</p>
+        <?php else: ?>
+            <ul class="divide-y divide-nebel">
+                <?php foreach ($upcoming as $b): ?>
+                    <li class="py-3 flex items-center gap-3 flex-wrap">
+                        <span class="ico"><?= icon($b['slot'] === 'tag' ? 'sun' : 'moon', 'h-5 w-5') ?></span>
+                        <div>
+                            <div class="font-ui font-medium text-navy"><?= e($b['member_name']) ?></div>
+                            <div class="text-sm text-schiefer"><?= e(fmt_date($b['booking_date'])) ?> · <?= e(slot_label($b['slot'])) ?> · <?= (int) $b['party_size'] ?> Pers.</div>
+                        </div>
+                        <span class="ml-auto"><?= status_badge('confirmed') ?></span>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+    </div>
+
 <?php else: ?>
     <!-- ===== MITGLIEDER-SICHT ===== -->
     <div class="grid gap-6 lg:grid-cols-3">

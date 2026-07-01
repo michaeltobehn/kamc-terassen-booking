@@ -114,6 +114,29 @@ function inspection_checklist(PDO $pdo): array
     return $pdo->query('SELECT name FROM amenities WHERE inspection_relevant = 1 AND is_active = 1 ORDER BY sort_order')->fetchAll();
 }
 
+/** Foto-Pfade der Abnahme-Dokumentation einer Buchung. @return string[] */
+function inspection_photos(PDO $pdo, int $bookingId): array
+{
+    $stmt = $pdo->prepare('SELECT file_path FROM inspection_photos WHERE booking_id = :b ORDER BY id');
+    $stmt->execute([':b' => $bookingId]);
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+
+/** Zuletzt abgenommene Buchungen inkl. Fotos (Doku-Archiv). */
+function recent_inspections(PDO $pdo, int $limit = 8): array
+{
+    $rows = $pdo->query(
+        "SELECT b.*, m.name AS member_name
+           FROM bookings b JOIN members m ON m.id = b.member_id
+          WHERE b.inspection_result IS NOT NULL
+          ORDER BY b.inspected_at DESC LIMIT " . (int) $limit
+    )->fetchAll();
+    foreach ($rows as &$r) {
+        $r['photos'] = inspection_photos($pdo, (int) $r['id']);
+    }
+    return $rows;
+}
+
 function settings_raw(PDO $pdo): array
 {
     return $pdo->query('SELECT * FROM settings WHERE id = 1')->fetch() ?: [];
