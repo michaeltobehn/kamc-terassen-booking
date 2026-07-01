@@ -53,7 +53,7 @@ page_header('Belegungsübersicht', 'Alle Buchungen, filterbar. Farbcodiert nach 
                     <tr class="hover:bg-sand/60">
                         <td class="px-4 py-3 whitespace-nowrap"><?= e(fmt_date($b['booking_date'])) ?></td>
                         <td class="px-4 py-3 whitespace-nowrap"><?= $b['slot'] === 'tag' ? 'Tag' : 'Abend' ?></td>
-                        <td class="px-4 py-3"><?= e($b['member_name']) ?><div class="text-xs text-schiefer"><?= e($b['member_email']) ?></div></td>
+                        <td class="px-4 py-3"><?= member_name($b['member_name'], $b['member_email']) ?></td>
                         <td class="px-4 py-3"><?= (int) $b['party_size'] ?></td>
                         <td class="px-4 py-3"><?= status_badge($b['status']) ?></td>
                         <td class="px-4 py-3"><?= $b['inspection_result'] ? status_badge($b['inspection_result']) : '<span class="text-schiefer/60">—</span>' ?></td>

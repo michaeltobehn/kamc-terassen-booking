@@ -60,6 +60,21 @@ function role_label(string $role): string
     };
 }
 
+/**
+ * Einheitliche, gut erfassbare Mitglieds-Anzeige: Personen-Icon + Name (Navy,
+ * halbfett), optional E-Mail als kleine Zeile darunter. Überall verwenden, wo
+ * ein Mitglied in Listen/Tabellen erscheint.
+ */
+function member_name(string $name, ?string $email = null): string
+{
+    $out = '<span class="inline-flex items-center gap-1.5 font-ui font-semibold text-navy">'
+         . icon('users', 'h-4 w-4 text-schiefer/50 shrink-0') . e($name) . '</span>';
+    if ($email !== null && $email !== '') {
+        $out .= '<span class="block text-xs text-schiefer font-normal">' . e($email) . '</span>';
+    }
+    return $out;
+}
+
 /** Inline-Line-Icons (stroke). 20×20, currentColor. */
 function icon(string $name, string $cls = 'h-5 w-5'): string
 {

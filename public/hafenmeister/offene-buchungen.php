@@ -36,8 +36,9 @@ page_header('Offene Freigaben', 'Anfragen prüfen und bestätigen oder ablehnen.
                     <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
                         <div>
                             <div class="font-ui font-semibold text-navy"><?= e(fmt_date($b['booking_date'])) ?> · <?= e(slot_label($b['slot'])) ?></div>
+                            <div class="mt-0.5"><?= member_name($b['member_name'], $b['member_email']) ?></div>
                             <div class="text-sm text-schiefer">
-                                <?= e($b['member_name']) ?> (<?= e($b['member_email']) ?>) · <?= (int) $b['party_size'] ?> Personen
+                                <?= (int) $b['party_size'] ?> Personen
                                 <?php if ($b['purpose']): ?> · <?= e($b['purpose']) ?><?php endif; ?>
                             </div>
                             <div class="text-xs text-schiefer mt-1">

@@ -100,7 +100,7 @@ page_start('Übersicht', $user, '');
                     <?php foreach ($pending as $b): ?>
                         <tr class="hover:bg-sand/60">
                             <td class="px-3 py-2.5 whitespace-nowrap"><span class="font-medium text-navy"><?= e(fmt_date($b['booking_date'])) ?></span> · <?= $slotCell($b) ?></td>
-                            <td class="px-3 py-2.5"><?= e($b['member_name']) ?></td>
+                            <td class="px-3 py-2.5"><?= member_name($b['member_name']) ?></td>
                             <td class="px-3 py-2.5 text-right"><?= (int) $b['party_size'] ?></td>
                             <td class="px-3 py-2.5 text-schiefer whitespace-nowrap"><?= e(fmt_dt($b['created_at'], 'd.m., H:i')) ?></td>
                             <td class="px-3 py-2.5 text-right"><a href="/hafenmeister/offene-buchungen.php" class="btn-primary btn-sm">Prüfen</a></td>
@@ -123,7 +123,7 @@ page_start('Übersicht', $user, '');
                     <?php foreach ($dueInsp as $b): ?>
                         <tr class="hover:bg-sand/60">
                             <td class="px-3 py-2.5 whitespace-nowrap"><span class="font-medium text-navy"><?= e(fmt_date($b['booking_date'])) ?></span> · <?= $slotCell($b) ?></td>
-                            <td class="px-3 py-2.5"><?= e($b['member_name']) ?></td>
+                            <td class="px-3 py-2.5"><?= member_name($b['member_name']) ?></td>
                             <td class="px-3 py-2.5 text-right"><?= (int) $b['party_size'] ?></td>
                             <td class="px-3 py-2.5 text-schiefer whitespace-nowrap"><?= e(fmt_dt($b['end_utc'], 'd.m., H:i')) ?></td>
                             <td class="px-3 py-2.5 text-right"><a href="/hafenmeister/abnahmen.php" class="btn-primary btn-sm">Abnehmen</a></td>
@@ -146,7 +146,7 @@ page_start('Übersicht', $user, '');
                     <?php foreach ($rework as $b): ?>
                         <tr class="hover:bg-sand/60 align-top">
                             <td class="px-3 py-2.5 whitespace-nowrap"><span class="font-medium text-navy"><?= e(fmt_date($b['booking_date'])) ?></span> · <?= $slotCell($b) ?></td>
-                            <td class="px-3 py-2.5"><?= e($b['member_name']) ?></td>
+                            <td class="px-3 py-2.5"><?= member_name($b['member_name']) ?></td>
                             <td class="px-3 py-2.5 text-schiefer max-w-xs"><?= e($b['inspection_notes'] ?: '—') ?></td>
                             <td class="px-3 py-2.5 text-right"><?= count($b['photos']) ?: '–' ?></td>
                             <td class="px-3 py-2.5 text-right"><a href="/hafenmeister/abnahmen.php" class="btn-ghost btn-sm">Details</a></td>
@@ -169,7 +169,7 @@ page_start('Übersicht', $user, '');
                     <?php foreach ($upcoming as $b): ?>
                         <tr class="hover:bg-sand/60">
                             <td class="px-3 py-2.5 whitespace-nowrap"><span class="font-medium text-navy"><?= e(fmt_date($b['booking_date'])) ?></span> · <?= $slotCell($b) ?></td>
-                            <td class="px-3 py-2.5"><?= e($b['member_name']) ?></td>
+                            <td class="px-3 py-2.5"><?= member_name($b['member_name']) ?></td>
                             <td class="px-3 py-2.5 text-right"><?= (int) $b['party_size'] ?></td>
                             <td class="px-3 py-2.5 text-schiefer whitespace-nowrap"><?= e(fmt_dt($b['start_utc'], 'd.m., H:i')) ?></td>
                             <td class="px-3 py-2.5"><?= status_badge('confirmed') ?></td>
@@ -192,7 +192,7 @@ page_start('Übersicht', $user, '');
                     <?php foreach ($history as $b): ?>
                         <tr class="hover:bg-sand/60">
                             <td class="px-3 py-2.5 whitespace-nowrap"><span class="font-medium text-navy"><?= e(fmt_date($b['booking_date'])) ?></span> · <?= $slotCell($b) ?></td>
-                            <td class="px-3 py-2.5"><?= e($b['member_name']) ?></td>
+                            <td class="px-3 py-2.5"><?= member_name($b['member_name']) ?></td>
                             <td class="px-3 py-2.5"><?= status_badge($b['status']) ?></td>
                             <td class="px-3 py-2.5"><?= $b['inspection_result'] ? status_badge($b['inspection_result']) : '<span class="text-schiefer/60">–</span>' ?></td>
                         </tr>

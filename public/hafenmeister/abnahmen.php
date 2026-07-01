@@ -52,7 +52,8 @@ page_header('Offene Abnahmen', 'Termin vorbei → prüfen, Fotos zur Doku anhän
                 <div class="card p-5">
                     <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mb-3">
                         <div class="font-ui font-semibold text-navy"><?= e(fmt_date($b['booking_date'])) ?> · <?= e(slot_label($b['slot'])) ?></div>
-                        <div class="text-sm text-schiefer"><?= e($b['member_name']) ?> · <?= (int) $b['party_size'] ?> Pers.</div>
+                        <?= member_name($b['member_name']) ?>
+                        <div class="text-sm text-schiefer"><?= (int) $b['party_size'] ?> Pers.</div>
                         <div class="ml-auto text-xs text-schiefer">Endete <?= e(fmt_dt($b['end_utc'])) ?></div>
                     </div>
                     <form method="post" enctype="multipart/form-data" class="space-y-3"
@@ -86,7 +87,7 @@ page_header('Offene Abnahmen', 'Termin vorbei → prüfen, Fotos zur Doku anhän
                 <div class="card p-5">
                     <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
                         <div class="font-ui font-medium text-navy"><?= e(fmt_date($b['booking_date'])) ?> · <?= e(slot_label($b['slot'])) ?></div>
-                        <div class="text-sm text-schiefer"><?= e($b['member_name']) ?></div>
+                        <?= member_name($b['member_name']) ?>
                         <span class="ml-auto"><?= status_badge($b['inspection_result']) ?></span>
                     </div>
                     <?php if ($b['inspection_notes']): ?>
