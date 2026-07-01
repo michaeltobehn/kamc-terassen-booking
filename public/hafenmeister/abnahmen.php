@@ -73,25 +73,7 @@ page_header('Abnahmen', 'Prüfen, Fotos zur Doku anhängen, abnehmen. Bei Mänge
                         <div class="text-sm text-schiefer"><?= (int) $b['party_size'] ?> Pers.</div>
                         <div class="ml-auto text-xs text-schiefer">Endete <?= e(fmt_dt($b['end_utc'])) ?></div>
                     </div>
-                    <form method="post" enctype="multipart/form-data" class="space-y-3" x-data="{names:'', rework:false}">
-                        <?= csrf_field() ?>
-                        <input type="hidden" name="action" value="inspect">
-                        <input type="hidden" name="id" value="<?= (int) $b['id'] ?>">
-                        <input class="field w-full" type="text" name="notes" placeholder="Notiz / Beanstandung (Grill ok · Brandfleck · gekehrt …)">
-                        <div class="flex flex-wrap items-center gap-3">
-                            <label class="btn-ghost btn-sm cursor-pointer">
-                                <?= icon('clipboard','h-4 w-4') ?> Fotos anhängen
-                                <input type="file" name="fotos[]" accept="image/*" multiple class="hidden" @change="names = Array.from($event.target.files).map(f=>f.name).join(', ')">
-                            </label>
-                            <span class="text-xs text-schiefer truncate" x-text="names || 'für die Doku'"></span>
-                            <label class="flex items-center gap-1.5 text-sm text-schiefer">Frist bei Nacharbeit:
-                                <input class="field !py-1.5 !w-40" type="date" name="rework_due"></label>
-                            <div class="ml-auto flex gap-2">
-                                <button class="btn-primary btn-sm" type="submit" name="result" value="passed">Abnahme ok</button>
-                                <button class="btn-akzent btn-sm" type="submit" name="result" value="rework">Nacharbeit nötig</button>
-                            </div>
-                        </div>
-                    </form>
+                    <a href="/hafenmeister/abnahme.php?id=<?= (int) $b['id'] ?>" class="btn-primary"><?= icon('clipboard','h-4 w-4') ?> Abnahme durchführen →</a>
                 </div>
             <?php endforeach; ?>
         </div>
