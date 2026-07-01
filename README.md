@@ -22,6 +22,30 @@ PHP 8.x + PDO · MySQL/MariaDB · Tailwind CSS · Alpine.js · Strato Shared Hos
 3. `npm install && npm run build:css`
 4. `public/` als Webroot; Aufruf zeigt "Setup OK".
 
+## Tests
+
+Die Buchungs-Engine (`src/slots.php`, `src/booking.php`) hat reine PHP-Tests
+ohne Abhaengigkeiten (kein PHPUnit/Composer). Sie laufen gegen eine
+**In-Memory-SQLite** — es muss also **kein MySQL laufen**:
+
+    php tests/slots_test.php
+
+Die Ausgabe endet bei Erfolg mit `ERGEBNIS: GRUEN`; der Exit-Code ist `0` bei
+Erfolg, `1` bei einem fehlgeschlagenen Assert (CI-tauglich).
+
+Mit MAMP (kein `php` im PATH) den vollen Pfad nutzen, z. B.:
+
+    /Applications/MAMP/bin/php/php8.4.1/bin/php tests/slots_test.php
+
+Abgedeckt: `slot_bounds` Tag/Abend inkl. Mitternachts-Uebergang und
+Europe/Berlin->UTC (Sommer-/Winterzeit), Doppelbuchungs-Ablehnung, Vorlauf < 24 h,
+Datum > `booking_window_end`, sowie die Statusabbildung von `day_status`.
+
+> Hinweis: Produktiv laeuft alles auf MySQL/MariaDB. Die einzige MySQL-Spezialitaet
+> (`GET_LOCK` fuer den Doppelbuchungs-Schutz) ist in `create_booking()` hinter
+> einem Adapter gekapselt (No-Op auf SQLite, echtes Named Lock auf MySQL), damit
+> die Tests portabel bleiben.
+
 ## Deploy (Strato)
 - **Automatisch:** Push auf `main` -> GitHub Actions baut CSS und deployt per FTP.
   Dafuer in *Settings -> Secrets and variables -> Actions* anlegen:
