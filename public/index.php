@@ -3,93 +3,192 @@ declare(strict_types=1);
 require __DIR__ . '/../src/layout.php';
 require __DIR__ . '/../src/repo.php';
 
-$user = require_login();
-$pdo  = db();
+/**
+ * Öffentliche Startseite (Landing) — zeigt das Angebot OHNE Login.
+ * Eingeloggte Nutzer bekommen im Header den Weg zur Übersicht.
+ */
+$user     = current_user();
+$amenities = amenities_all(db(), true);
 
-$myBookings = bookings_for_member($pdo, (int) $user['id']);
-$myUpcoming = array_filter($myBookings, fn($b) => $b['end_utc'] >= now_utc() && in_array($b['status'], ['pending', 'confirmed'], true));
-
-$isStaff = has_role($user, 'hafenmeister', 'admin');
-if ($isStaff) {
-    $pending     = pending_bookings($pdo);
-    $inspections = open_inspections($pdo);
-    $upcoming    = upcoming_confirmed($pdo, 6);
-}
-
-page_start('Übersicht', $user, '');
-page_header('Ahoi, ' . explode(' ', $user['name'])[0] . '! 👋', 'Willkommen in der Buchung der Lounge oben.');
+page_start('Willkommen', $user, '', 'public');
 ?>
-<div class="container-page grid gap-6 md:grid-cols-3">
-    <a href="/kalender.php" class="card p-6 hover:shadow-lg transition group">
-        <div class="text-3xl">🗓️</div>
-        <h3 class="mt-3 text-lg font-semibold">Belegungskalender</h3>
-        <p class="mt-1 text-sm text-schiefer">Freie Tage & Slots auf einen Blick.</p>
-        <span class="mt-3 inline-block text-akzent font-ui text-sm group-hover:underline">Öffnen →</span>
-    </a>
-    <a href="/buchen.php" class="card p-6 hover:shadow-lg transition group">
-        <div class="text-3xl">✍️</div>
-        <h3 class="mt-3 text-lg font-semibold">Neue Buchung</h3>
-        <p class="mt-1 text-sm text-schiefer">Tag- oder Abend-Slot anfragen.</p>
-        <span class="mt-3 inline-block text-akzent font-ui text-sm group-hover:underline">Buchen →</span>
-    </a>
-    <a href="/ausstattung.php" class="card p-6 hover:shadow-lg transition group">
-        <div class="text-3xl">🍹</div>
-        <h3 class="mt-3 text-lg font-semibold">Ausstattung</h3>
-        <p class="mt-1 text-sm text-schiefer">Was du buchst — und worauf zu achten ist.</p>
-        <span class="mt-3 inline-block text-akzent font-ui text-sm group-hover:underline">Ansehen →</span>
-    </a>
-</div>
-
-<div class="container-page mt-8">
-    <div class="card p-6">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold">Deine nächsten Termine</h2>
-            <a href="/meine-buchungen.php" class="text-sm text-akzent hover:underline">Alle ansehen</a>
-        </div>
-        <?php if (!$myUpcoming): ?>
-            <p class="text-schiefer text-sm">Noch keine anstehenden Buchungen. <a class="text-akzent hover:underline" href="/buchen.php">Jetzt buchen</a>.</p>
-        <?php else: ?>
-            <ul class="divide-y divide-nebel">
-                <?php foreach ($myUpcoming as $b): ?>
-                    <li class="py-3 flex items-center gap-3 flex-wrap">
-                        <span class="font-ui font-medium"><?= e(fmt_date($b['booking_date'])) ?></span>
-                        <span class="text-schiefer text-sm"><?= e(slot_label($b['slot'])) ?></span>
-                        <span class="text-schiefer text-sm">· <?= (int) $b['party_size'] ?> Pers.</span>
-                        <span class="ml-auto"><?= status_badge($b['status']) ?></span>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
-    </div>
-</div>
-
-<?php if ($isStaff): ?>
-<div class="container-page mt-8">
-    <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">Hafenmeisterei <span class="badge badge-blackout"><?= e(role_label($user['role'])) ?></span></h2>
-    <div class="grid gap-6 md:grid-cols-3">
-        <div class="card p-6">
-            <div class="flex items-baseline justify-between">
-                <h3 class="font-semibold">Offene Freigaben</h3>
-                <span class="text-3xl font-display text-akzent"><?= count($pending) ?></span>
+<!-- ============ HERO ============ -->
+<section class="relative overflow-hidden bg-gradient-to-b from-navy-950 via-navy to-navy-800 text-white">
+    <!-- dekoratives Muster + Logo-Wasserzeichen -->
+    <img src="/assets/img/kamc-logo.png" alt="" aria-hidden="true"
+         class="pointer-events-none select-none absolute -right-16 -top-10 w-[28rem] max-w-none opacity-[0.06]">
+    <div class="container-page relative pt-32 pb-28 sm:pt-40 sm:pb-36">
+        <div class="max-w-2xl">
+            <p class="eyebrow">Rheinauhafen Köln · KAMC e.V.</p>
+            <h1 class="mt-4 font-display font-semibold text-4xl sm:text-6xl leading-[1.05] text-white">
+                Feiern über dem <span class="text-himmel">Rheinauhafen</span>.
+            </h1>
+            <p class="mt-5 lead text-white/85">
+                Die „Lounge oben" — Terrasse und Innenbereich des Clubs — für deinen privaten Anlass.
+                Zwei feste Slots pro Tag, bis zu 16 Personen, <strong class="text-white">kostenlos für Mitglieder</strong>.
+            </p>
+            <div class="mt-8 flex flex-wrap gap-3">
+                <a href="/buchen.php" class="btn-akzent text-base px-6 py-3"><?= icon('plus','h-5 w-5') ?> Jetzt buchen</a>
+                <a href="#angebot" class="btn text-base px-6 py-3 bg-white/10 text-white hover:bg-white/20">Angebot ansehen</a>
             </div>
-            <a href="/hafenmeister/offene-buchungen.php" class="mt-3 inline-block text-sm text-akzent hover:underline">Bearbeiten →</a>
-        </div>
-        <div class="card p-6">
-            <div class="flex items-baseline justify-between">
-                <h3 class="font-semibold">Offene Abnahmen</h3>
-                <span class="text-3xl font-display text-navy"><?= count($inspections) ?></span>
+            <div class="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/70">
+                <span class="flex items-center gap-2"><?= icon('anchor','h-4 w-4 text-himmel') ?> Nur für Mitglieder</span>
+                <span class="flex items-center gap-2"><?= icon('sun','h-4 w-4 text-himmel') ?> Tag &amp; Abend</span>
+                <span class="flex items-center gap-2"><?= icon('users','h-4 w-4 text-himmel') ?> bis 16 Personen</span>
             </div>
-            <a href="/hafenmeister/abnahmen.php" class="mt-3 inline-block text-sm text-akzent hover:underline">Bearbeiten →</a>
-        </div>
-        <div class="card p-6">
-            <div class="flex items-baseline justify-between">
-                <h3 class="font-semibold">Bestätigt (kommend)</h3>
-                <span class="text-3xl font-display text-navy"><?= count($upcoming) ?></span>
-            </div>
-            <a href="/hafenmeister/belegung.php" class="mt-3 inline-block text-sm text-akzent hover:underline">Belegung →</a>
         </div>
     </div>
-</div>
-<?php endif; ?>
+    <!-- Wellen-Divider -->
+    <svg class="block w-full text-sand" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+        <path fill="currentColor" d="M0,48 C240,90 480,10 720,32 C960,54 1200,96 1440,40 L1440,90 L0,90 Z"/>
+    </svg>
+</section>
+
+<!-- ============ ANGEBOT + LIVE-VERFÜGBARKEIT ============ -->
+<section id="angebot" class="section">
+    <div class="container-page">
+        <div class="max-w-2xl">
+            <p class="eyebrow !text-navy/50">Das Angebot</p>
+            <h2 class="mt-2 text-3xl sm:text-4xl font-display font-semibold text-navy">Zwei Slots. Ein Ort mit Aussicht.</h2>
+            <p class="mt-3 lead">Keine komplizierte Zeitwahl — du buchst einen festen Slot. Verfügbarkeit wird live berechnet.</p>
+        </div>
+
+        <div class="mt-10 grid gap-6 lg:grid-cols-3">
+            <div class="feature-card">
+                <span class="ico-akzent"><?= icon('sun') ?></span>
+                <h3 class="mt-4 text-xl font-semibold">Tag-Slot</h3>
+                <p class="mt-1 text-schiefer">Von Öffnung bis <strong>18:00 Uhr</strong>. Ideal für Brunch, Kaffee &amp; Kuchen oder Nachmittag am Wasser.</p>
+            </div>
+            <div class="feature-card">
+                <span class="ico"><?= icon('moon') ?></span>
+                <h3 class="mt-4 text-xl font-semibold">Abend-Slot</h3>
+                <p class="mt-1 text-schiefer">Ab <strong>18:00 Uhr</strong> bis Schließung (bis 02:00). Für Geburtstage und laue Sommerabende.</p>
+            </div>
+            <!-- Live-Widget -->
+            <div class="feature-card !bg-navy text-white" x-data="freeDays()" x-init="load()">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-white">Nächste freie Tage</h3>
+                    <span class="badge badge-frei">live</span>
+                </div>
+                <ul class="mt-4 space-y-2 text-sm" x-show="days.length">
+                    <template x-for="d in days" :key="d.date">
+                        <li class="flex items-center justify-between border-b border-white/10 pb-2">
+                            <span x-text="d.label" class="text-white/90"></span>
+                            <span class="flex gap-1">
+                                <template x-if="d.tag"><span class="badge badge-frei">Tag</span></template>
+                                <template x-if="d.abend"><span class="badge badge-frei">Abend</span></template>
+                            </span>
+                        </li>
+                    </template>
+                </ul>
+                <p x-show="!days.length && !loading" x-cloak class="mt-4 text-sm text-white/70">Aktuell keine freien Tage im Fenster.</p>
+                <a href="/buchen.php" class="btn-akzent btn-sm mt-5">Termin sichern</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ ABLAUF ============ -->
+<section id="ablauf" class="section bg-white">
+    <div class="container-page">
+        <p class="eyebrow !text-navy/50">So funktioniert's</p>
+        <h2 class="mt-2 text-3xl sm:text-4xl font-display font-semibold text-navy">In drei Schritten gebucht</h2>
+        <div class="mt-10 grid gap-8 md:grid-cols-3">
+            <div class="flex gap-4">
+                <span class="step-num">1</span>
+                <div><h3 class="font-semibold text-lg">Slot wählen</h3>
+                    <p class="mt-1 text-schiefer">Im Kalender einen freien Tag- oder Abend-Slot aussuchen (mind. 24 h im Voraus).</p></div>
+            </div>
+            <div class="flex gap-4">
+                <span class="step-num">2</span>
+                <div><h3 class="font-semibold text-lg">Anfragen</h3>
+                    <p class="mt-1 text-schiefer">Personenzahl und Anlass angeben, Hausordnung bestätigen — fertig ist die Anfrage.</p></div>
+            </div>
+            <div class="flex gap-4">
+                <span class="step-num">3</span>
+                <div><h3 class="font-semibold text-lg">Bestätigung &amp; Schlüssel</h3>
+                    <p class="mt-1 text-schiefer">Die Hafenmeisterei bestätigt und übergibt den Schlüssel mit Begehung.</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ AUSSTATTUNG ============ -->
+<section id="ausstattung" class="section">
+    <div class="container-page">
+        <div class="flex items-end justify-between flex-wrap gap-4">
+            <div class="max-w-xl">
+                <p class="eyebrow !text-navy/50">Ausstattung</p>
+                <h2 class="mt-2 text-3xl sm:text-4xl font-display font-semibold text-navy">Alles da — einfach mitbringen, was schmeckt.</h2>
+            </div>
+        </div>
+        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <?php foreach (array_slice($amenities, 0, 6) as $a): ?>
+                <div class="feature-card flex flex-col">
+                    <div class="aspect-[16/10] -m-6 mb-4 rounded-t-xl2 bg-gradient-to-br from-navy to-himmel/40 flex items-center justify-center overflow-hidden">
+                        <?php if ($a['image_path']): ?>
+                            <img src="<?= e($a['image_path']) ?>" alt="<?= e($a['name']) ?>" class="w-full h-full object-cover">
+                        <?php else: ?>
+                            <img src="/assets/img/kamc-logo.png" alt="" class="h-16 w-16 rounded-full opacity-80 ring-2 ring-white/30">
+                        <?php endif; ?>
+                    </div>
+                    <h3 class="font-semibold text-lg"><?= e($a['name']) ?></h3>
+                    <?php if ($a['description']): ?><p class="mt-1 text-sm text-schiefer flex-1"><?= e($a['description']) ?></p><?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
+<!-- ============ REGELN ============ -->
+<section class="section bg-navy text-white">
+    <div class="container-page grid gap-8 md:grid-cols-4 text-center">
+        <div><div class="mx-auto ico bg-white/10 text-himmel"><?= icon('shield') ?></div><h3 class="mt-3 font-semibold">Kostenlos</h3><p class="mt-1 text-sm text-white/70">Kein Entgelt, kein Pfand im Pilot.</p></div>
+        <div><div class="mx-auto ico bg-white/10 text-himmel"><?= icon('moon') ?></div><h3 class="mt-3 font-semibold">Keine Musik</h3><p class="mt-1 text-sm text-white/70">Rücksicht auf Hafen &amp; Nachbarn.</p></div>
+        <div><div class="mx-auto ico bg-white/10 text-himmel"><?= icon('anchor') ?></div><h3 class="mt-3 font-semibold">Für Mitglieder</h3><p class="mt-1 text-sm text-white/70">Gäste nur in Begleitung.</p></div>
+        <div><div class="mx-auto ico bg-white/10 text-himmel"><?= icon('sparkle') ?></div><h3 class="mt-3 font-semibold">Selbstversorgung</h3><p class="mt-1 text-sm text-white/70">Grill gestellt, Rest bringst du mit.</p></div>
+    </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="section">
+    <div class="container-page">
+        <div class="card bg-gradient-to-r from-navy to-navy-800 text-white p-10 sm:p-14 text-center">
+            <h2 class="text-3xl sm:text-4xl font-display font-semibold text-white">Bereit für deinen Termin an Deck?</h2>
+            <p class="mt-3 lead text-white/85 max-w-xl mx-auto">Melde dich an und sichere dir deinen Slot in der Lounge oben.</p>
+            <div class="mt-7 flex flex-wrap gap-3 justify-center">
+                <a href="/buchen.php" class="btn-akzent text-base px-6 py-3"><?= icon('plus','h-5 w-5') ?> Jetzt buchen</a>
+                <?php if (!$user): ?><a href="/login.php" class="btn text-base px-6 py-3 bg-white/10 text-white hover:bg-white/20">Anmelden</a><?php endif; ?>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function freeDays() {
+    return {
+        days: [], loading: false,
+        pad(n){ return String(n).padStart(2,'0'); },
+        async load(){
+            this.loading = true;
+            const t = new Date();
+            const from = t.getFullYear()+'-'+this.pad(t.getMonth()+1)+'-'+this.pad(t.getDate());
+            const e = new Date(t.getTime()+45*864e5);
+            const to = e.getFullYear()+'-'+this.pad(e.getMonth()+1)+'-'+this.pad(e.getDate());
+            try {
+                const res = await fetch('/availability.php?from='+from+'&to='+to);
+                const data = await res.json();
+                const names=['So','Mo','Di','Mi','Do','Fr','Sa'];
+                this.days = data.filter(d => d.tag==='frei' || d.abend==='frei').slice(0,5).map(d=>{
+                    const dt = new Date(d.date+'T00:00:00');
+                    return { date:d.date, label: names[dt.getDay()]+'., '+d.date.split('-').reverse().join('.'),
+                             tag: d.tag==='frei', abend: d.abend==='frei' };
+                });
+            } catch(e) {}
+            this.loading = false;
+        }
+    };
+}
+</script>
 <?php
 page_end();

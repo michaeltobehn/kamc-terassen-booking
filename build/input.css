@@ -56,4 +56,19 @@
   /* Kalender-Zellen */
   .cal-cell { @apply relative rounded-lg p-2 min-h-[4.5rem] ring-1 ring-navy/5 bg-white; }
   .slot-chip { @apply block w-full rounded-md px-1.5 py-1 text-[11px] font-ui font-semibold text-center transition; }
+
+  /* Dropdown-Menü (Header) */
+  .menu-item { @apply flex items-center gap-2 rounded-md px-3 py-2 text-sm font-ui text-navy-950 hover:bg-nebel transition; }
+  .menu-item-active { @apply bg-himmel-light/60 text-navy font-medium; }
+
+  /* Landing / Editorial */
+  .eyebrow { @apply inline-flex items-center gap-2 text-xs font-ui font-semibold uppercase tracking-[0.18em] text-himmel; }
+  .section { @apply py-16 sm:py-24; }
+  .lead { @apply text-lg sm:text-xl text-schiefer leading-relaxed; }
+  .feature-card { @apply rounded-xl2 bg-white p-6 ring-1 ring-navy/5 shadow-card; }
+  .step-num { @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-akzent text-white font-display text-lg; }
+
+  /* Icon-Wrapper */
+  .ico { @apply inline-flex h-10 w-10 items-center justify-center rounded-lg bg-navy/5 text-navy; }
+  .ico-akzent { @apply inline-flex h-10 w-10 items-center justify-center rounded-lg bg-akzent/10 text-akzent; }
 }

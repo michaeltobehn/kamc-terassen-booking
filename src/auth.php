@@ -81,7 +81,7 @@ function require_role(string ...$roles): array
     if (!in_array($u['role'], $roles, true)) {
         http_response_code(403);
         flash_set('error', 'Dafür fehlt dir die Berechtigung.');
-        header('Location: /index.php');
+        header('Location: /dashboard.php');
         exit;
     }
     return $u;

@@ -6,7 +6,7 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_check();
     if (attempt_login((string) ($_POST['email'] ?? ''), (string) ($_POST['password'] ?? ''))) {
-        header('Location: /index.php');
+        header('Location: /dashboard.php');
         exit;
     }
     $error = 'E-Mail oder Passwort stimmt nicht.';
