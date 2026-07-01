@@ -102,7 +102,8 @@ page_start('Lounge oben', $user, '', $user ? 'app' : 'public');
         <!-- Lightbox -->
         <div x-show="open" x-cloak
              @keydown.escape.window="open=false" @keydown.arrow-right.window="next()" @keydown.arrow-left.window="prev()"
-             class="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4"
+             @touchstart.passive="ts($event)" @touchend="te($event)"
+             class="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4 touch-pan-y select-none"
              @click.self="open=false" role="dialog" aria-modal="true">
             <button type="button" @click="open=false" aria-label="Schließen"
                     class="absolute top-4 right-4 h-11 w-11 inline-flex items-center justify-center rounded-full bg-white/10 text-white text-xl hover:bg-white/20">✕</button>
@@ -285,10 +286,16 @@ page_start('Lounge oben', $user, '', $user ? 'app' : 'public');
 <script>
 function loungeGallery(images) {
     return {
-        open: false, idx: 0, images: images,
+        open: false, idx: 0, images: images, sx: 0, sy: 0,
         show(i) { this.idx = i; this.open = true; },
         next() { this.idx = (this.idx + 1) % this.images.length; },
         prev() { this.idx = (this.idx - 1 + this.images.length) % this.images.length; },
+        ts(e) { const t = e.changedTouches[0]; this.sx = t.clientX; this.sy = t.clientY; },
+        te(e) {
+            const t = e.changedTouches[0], dx = t.clientX - this.sx, dy = t.clientY - this.sy;
+            if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { dx < 0 ? this.next() : this.prev(); }
+            else if (dy > 90 && Math.abs(dy) > Math.abs(dx)) { this.open = false; }
+        },
         init() { this.$watch('open', v => { document.documentElement.style.overflow = v ? 'hidden' : ''; }); },
     };
 }
