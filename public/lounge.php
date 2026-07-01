@@ -235,6 +235,19 @@ page_start('Lounge oben', $user, '', $user ? 'app' : 'public');
                         </div>
                     </div>
 
+                    <!-- Nächste freie Tage (sichtbar ohne Login) -->
+                    <div class="mt-3" x-show="free.length" x-cloak>
+                        <div class="text-[11px] font-ui font-semibold uppercase tracking-wide text-schiefer mb-1.5">Nächste freie Tage</div>
+                        <div class="flex flex-wrap gap-1.5">
+                            <template x-for="d in free" :key="d.date">
+                                <button type="button" @click="pick(d.date)"
+                                        class="rounded-md ring-1 ring-black/10 px-2 py-1 text-xs font-ui hover:bg-black/[0.03]"
+                                        :class="date===d.date ? 'bg-navy text-white ring-navy' : 'text-navy-950'"
+                                        x-text="d.label"></button>
+                            </template>
+                        </div>
+                    </div>
+
                     <!-- Live-Verfügbarkeitshinweis -->
                     <div class="mt-2 min-h-[1.25rem] text-xs" x-show="date" x-cloak>
                         <span x-show="loading" class="text-schiefer">Prüfe Verfügbarkeit…</span>
@@ -251,7 +264,7 @@ page_start('Lounge oben', $user, '', $user ? 'app' : 'public');
                         </label>
                         <input type="text" name="purpose" maxlength="200" placeholder="Anlass (optional) — z. B. Geburtstag" class="field mt-3 !py-2 text-sm">
                         <button type="submit" class="btn-akzent w-full mt-4 text-base py-3">Buchung anfragen</button>
-                        <p class="mt-3 text-center text-xs text-schiefer">Du wirst noch nicht belastet — Bestätigung durch die Hafenmeisterei.</p>
+                        <p class="mt-3 text-center text-xs text-schiefer">Kostenlos &amp; unverbindlich — die Hafenmeisterei bestätigt deine Anfrage.</p>
                     <?php else: ?>
                         <a href="/login.php" class="btn-akzent w-full mt-4 text-base py-3">Anmelden &amp; buchen</a>
                         <p class="mt-3 text-center text-xs text-schiefer">Buchen ist Mitgliedern vorbehalten. Zugang über den Vorstand.</p>
@@ -282,7 +295,22 @@ function loungeGallery(images) {
 function booker(isUser) {
     return {
         date: <?= json_encode($prefill['booking_date']) ?>, slot: <?= json_encode($prefill['slot']) ?>,
-        avail: null, loading: false,
+        avail: null, loading: false, free: [],
+        pad(n){ return String(n).padStart(2,'0'); },
+        pick(d){ this.date = d; this.check(); },
+        async loadFree(){
+            const t = new Date();
+            const from = t.getFullYear()+'-'+this.pad(t.getMonth()+1)+'-'+this.pad(t.getDate());
+            const e = new Date(t.getTime()+45*864e5);
+            const to = e.getFullYear()+'-'+this.pad(e.getMonth()+1)+'-'+this.pad(e.getDate());
+            try {
+                const r = await fetch('/availability.php?from='+from+'&to='+to);
+                const data = await r.json();
+                const names = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+                this.free = data.filter(x => x.tag==='frei' || x.abend==='frei').slice(0,6)
+                    .map(x => { const dt = new Date(x.date+'T00:00:00'); return { date: x.date, label: names[dt.getDay()]+' '+x.date.slice(8,10)+'.'+x.date.slice(5,7)+'.' }; });
+            } catch(e) {}
+        },
         get slotFree(){ if(!this.avail) return false; const s=this.slot||'tag'; return this.avail[s]==='frei'; },
         get slotHint(){
             if(!this.avail) return '';
@@ -296,7 +324,7 @@ function booker(isUser) {
             try{ const r=await fetch('/availability.php?from='+this.date+'&to='+this.date); const d=await r.json(); this.avail=d[0]||null; }catch(e){}
             this.loading=false;
         },
-        init(){ if(this.date) this.check(); }
+        init(){ this.loadFree(); if(this.date) this.check(); }
     };
 }
 </script>
