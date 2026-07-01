@@ -69,9 +69,9 @@ page_start('Lounge oben', $user, '', $user ? 'app' : 'public');
 
     <!-- Galerie (1 groß + 4 klein) -->
     <div class="grid grid-cols-4 grid-rows-2 gap-2 h-[52vh] max-h-[460px] rounded-xl2 overflow-hidden">
-        <div class="gallery-tile col-span-2 row-span-2"><?= icon($tiles[0]['icon'], 'absolute right-4 top-4 h-8 w-8 text-white/30') ?><span class="gallery-cap"><?= e($tiles[0]['cap']) ?></span></div>
+        <div class="gallery-tile col-span-2 row-span-2"><?= icon($tiles[0]['icon'], 'absolute right-4 top-4 h-8 w-8 text-navy/15') ?><span class="gallery-cap"><?= e($tiles[0]['cap']) ?></span></div>
         <?php for ($i = 1; $i <= 4; $i++): ?>
-            <div class="gallery-tile"><?= icon($tiles[$i]['icon'], 'absolute right-3 top-3 h-6 w-6 text-white/25') ?><span class="gallery-cap"><?= e($tiles[$i]['cap']) ?></span></div>
+            <div class="gallery-tile"><?= icon($tiles[$i]['icon'], 'absolute right-3 top-3 h-6 w-6 text-navy/15') ?><span class="gallery-cap"><?= e($tiles[$i]['cap']) ?></span></div>
         <?php endfor; ?>
     </div>
     <p class="mt-2 text-xs text-schiefer">Fotos folgen — Platzhalter im KAMC-Look. Echte Aufnahmen von Terrasse, Grill &amp; Innenbereich lassen sich pro Ausstattungs-Item pflegen.</p>

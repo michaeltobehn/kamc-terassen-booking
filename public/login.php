@@ -19,12 +19,12 @@ if (current_user()) {
 
 page_start('Anmelden');
 ?>
-<div class="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-navy to-navy-950">
+<div class="min-h-screen flex items-center justify-center px-4 py-12 bg-black/[0.015]">
     <div class="w-full max-w-md">
         <div class="text-center mb-8">
-            <img src="/assets/img/kamc-logo.png" alt="KAMC" class="mx-auto h-20 w-20 rounded-full ring-4 ring-white/15 shadow-xl">
-            <h1 class="mt-5 font-display text-3xl text-white">Lounge oben</h1>
-            <p class="mt-1 text-himmel-light/80 text-sm">Ahoi! Buchung der Clubterrasse für KAMC-Mitglieder.</p>
+            <img src="/assets/img/kamc-logo.png" alt="KAMC" class="mx-auto h-20 w-20 rounded-full ring-1 ring-black/10">
+            <h1 class="mt-5 font-display text-3xl text-navy">Lounge oben</h1>
+            <p class="mt-1 text-schiefer text-sm">Ahoi! Buchung der Clubterrasse für KAMC-Mitglieder.</p>
         </div>
         <div class="card p-6 sm:p-8">
             <?php if ($error): ?>
@@ -47,8 +47,8 @@ page_start('Anmelden');
                 Passwort vergessen? Bitte an die Hafenmeisterei wenden.
             </p>
         </div>
-        <div class="mt-4 rounded-lg bg-white/10 text-himmel-light/90 text-xs px-4 py-3 leading-relaxed">
-            <strong class="text-white">Dev-Zugänge</strong> (Passwort <code class="text-white">kamc</code>):
+        <div class="mt-4 rounded-lg bg-black/[0.03] ring-1 ring-black/[0.06] text-schiefer text-xs px-4 py-3 leading-relaxed">
+            <strong class="text-navy">Dev-Zugänge</strong> (Passwort <code class="text-navy">kamc</code>):
             admin@kamc.dev · hafen@kamc.dev · member@kamc.dev
         </div>
     </div>

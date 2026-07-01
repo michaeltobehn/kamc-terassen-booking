@@ -21,7 +21,7 @@ page_start('Übersicht', $user, '');
 <div class="container-page">
     <div class="mb-8">
         <p class="eyebrow text-himmel/90 !text-navy/50">Übersicht</p>
-        <h1 class="mt-1 text-3xl font-display font-semibold text-navy">Ahoi, <?= e(explode(' ', $user['name'])[0]) ?>! 👋</h1>
+        <h1 class="mt-1 text-3xl font-display font-semibold text-navy">Ahoi, <?= e(explode(' ', $user['name'])[0]) ?></h1>
         <p class="mt-1 text-schiefer">Deine Buchungen und schnelle Aktionen auf einen Blick.</p>
     </div>
 

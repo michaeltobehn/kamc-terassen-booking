@@ -166,11 +166,11 @@ function render_app_header(array $user, string $active): void
         return '<a href="' . e($it['href']) . '" class="nav-link ' . $on . '">' . e($it['label']) . '</a>';
     };
     ?>
-    <header class="bg-navy text-white sticky top-0 z-40 shadow-lg" x-data="{mobile:false}">
+    <header class="bg-white/90 backdrop-blur border-b border-black/[0.06] text-navy sticky top-0 z-40" x-data="{mobile:false}">
         <div class="container-page flex items-center gap-2 h-16">
             <a href="/dashboard.php" class="flex items-center gap-2.5 shrink-0">
-                <img src="/assets/img/kamc-logo.png" alt="KAMC" class="h-9 w-9 rounded-full ring-2 ring-white/20">
-                <span class="font-display text-lg leading-none">KAMC<span class="text-himmel"> · </span><span class="font-ui font-light text-white/80 text-base"><?= APP_NAME ?></span></span>
+                <img src="/assets/img/kamc-logo.png" alt="KAMC" class="h-9 w-9 rounded-full ring-1 ring-black/10">
+                <span class="font-display text-lg leading-none text-navy">KAMC<span class="text-schiefer"> · </span><span class="font-ui font-light text-schiefer text-base"><?= APP_NAME ?></span></span>
             </a>
 
             <nav class="hidden lg:flex items-center gap-0.5 ml-4">
@@ -216,8 +216,8 @@ function render_app_header(array $user, string $active): void
                 <!-- User-Menü -->
                 <div class="relative hidden lg:block" x-data="{o:false}" @click.outside="o=false">
                     <button @click="o=!o" class="nav-link flex items-center gap-2">
-                        <span class="text-white/80"><?= e(explode(' ', $user['name'])[0]) ?></span>
-                        <span class="text-[10px] rounded-full bg-white/15 px-2 py-0.5"><?= e(role_label($user['role'])) ?></span>
+                        <span class="text-navy/70"><?= e(explode(' ', $user['name'])[0]) ?></span>
+                        <span class="text-[10px] rounded-full bg-navy/[0.06] text-navy px-2 py-0.5"><?= e(role_label($user['role'])) ?></span>
                     </button>
                     <div x-show="o" x-cloak x-transition class="absolute right-0 mt-2 w-48 card p-1.5 z-50">
                         <a href="/dashboard.php" class="menu-item">Übersicht</a>
@@ -229,14 +229,14 @@ function render_app_header(array $user, string $active): void
         </div>
 
         <!-- Mobile -->
-        <nav x-show="mobile" x-cloak class="lg:hidden border-t border-white/10 px-4 pb-4 pt-2 space-y-0.5">
+        <nav x-show="mobile" x-cloak class="lg:hidden border-t border-black/[0.06] px-4 pb-4 pt-2 space-y-0.5">
             <a href="/lounge.php" class="btn-akzent w-full mb-2"><?= icon('plus', 'h-4 w-4') ?> Buchen</a>
             <?php foreach (array_merge($g['primary'], $g['info']) as $it) echo $link($it, $active); ?>
-            <?php if ($g['hafen']): ?><div class="pt-2 mt-1 border-t border-white/10 text-[11px] uppercase tracking-wide text-white/50 px-3 py-1">Hafenmeisterei</div>
+            <?php if ($g['hafen']): ?><div class="pt-2 mt-1 border-t border-black/[0.06] text-[11px] uppercase tracking-wide text-schiefer px-3 py-1">Hafenmeisterei</div>
                 <?php foreach ($g['hafen'] as $it) echo $link($it, $active); endif; ?>
-            <?php if ($g['admin']): ?><div class="pt-2 mt-1 border-t border-white/10 text-[11px] uppercase tracking-wide text-white/50 px-3 py-1">Admin</div>
+            <?php if ($g['admin']): ?><div class="pt-2 mt-1 border-t border-black/[0.06] text-[11px] uppercase tracking-wide text-schiefer px-3 py-1">Admin</div>
                 <?php foreach ($g['admin'] as $it) echo $link($it, $active); endif; ?>
-            <a href="/logout.php" class="nav-link text-himmel-light mt-2">Abmelden</a>
+            <a href="/logout.php" class="nav-link text-akzent mt-2">Abmelden</a>
         </nav>
     </header>
 <?php
@@ -249,8 +249,8 @@ function render_public_header(?array $user): void
     <header class="absolute inset-x-0 top-0 z-40">
         <div class="container-page flex items-center gap-3 h-20">
             <a href="/" class="flex items-center gap-2.5">
-                <img src="/assets/img/kamc-logo.png" alt="KAMC" class="h-11 w-11 rounded-full ring-2 ring-white/25">
-                <span class="font-display text-xl text-white leading-none">KAMC<span class="text-himmel"> · </span><span class="font-ui font-light text-white/85 text-lg"><?= APP_NAME ?></span></span>
+                <img src="/assets/img/kamc-logo.png" alt="KAMC" class="h-11 w-11 rounded-full ring-1 ring-black/10">
+                <span class="font-display text-xl text-navy leading-none">KAMC<span class="text-schiefer"> · </span><span class="font-ui font-light text-schiefer text-lg"><?= APP_NAME ?></span></span>
             </a>
             <nav class="hidden md:flex items-center gap-1 ml-auto">
                 <a href="#angebot" class="nav-link">Angebot</a>
@@ -292,17 +292,17 @@ function page_end(): void
 {
     ?>
     </main>
-    <footer class="mt-auto bg-navy-950 text-white/70">
+    <footer class="mt-auto bg-white border-t border-black/[0.06] text-schiefer">
         <div class="container-page py-8 flex flex-col sm:flex-row gap-4 items-center justify-between text-sm">
             <div class="flex items-center gap-2">
-                <img src="/assets/img/kamc-logo.png" alt="" class="h-7 w-7 rounded-full opacity-90">
+                <img src="/assets/img/kamc-logo.png" alt="" class="h-7 w-7 rounded-full ring-1 ring-black/10">
                 <span>KAMC e.V. · Kölner Autbord- und Motoryachtclub · Rheinauhafen</span>
             </div>
             <nav class="flex flex-wrap gap-x-5 gap-y-1">
-                <a class="hover:text-white" href="https://kamc.koeln" target="_blank" rel="noopener">kamc.koeln</a>
-                <a class="hover:text-white" href="https://kamc.kurabu.com" target="_blank" rel="noopener">Mitglieder-Portal</a>
-                <a class="hover:text-white" href="https://kamc.koeln/impressum" target="_blank" rel="noopener">Impressum</a>
-                <a class="hover:text-white" href="https://kamc.koeln/datenschutz" target="_blank" rel="noopener">Datenschutz</a>
+                <a class="hover:text-navy" href="https://kamc.koeln" target="_blank" rel="noopener">kamc.koeln</a>
+                <a class="hover:text-navy" href="https://kamc.kurabu.com" target="_blank" rel="noopener">Mitglieder-Portal</a>
+                <a class="hover:text-navy" href="https://kamc.koeln/impressum" target="_blank" rel="noopener">Impressum</a>
+                <a class="hover:text-navy" href="https://kamc.koeln/datenschutz" target="_blank" rel="noopener">Datenschutz</a>
             </nav>
         </div>
     </footer>

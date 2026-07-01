@@ -1,4 +1,6 @@
-/* KAMC · Lounge oben — Tailwind-Quelle. Build: npm run build:css -> public/assets/style.css */
+/* KAMC · Lounge oben — Tailwind-Quelle. Build: npm run build:css -> public/assets/style.css
+   Stil: MINIMAL — helle Flächen, Haarlinien statt Schatten, ein Akzent (Rot) sparsam.
+   Fonts 1:1 kamc.koeln: Headlines Roboto, Fliesstext Open Sans. */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..700;1,400&family=Roboto:wght@400;500;700&display=swap');
 
 @tailwind base;
@@ -7,11 +9,10 @@
 
 @layer base {
   html { scroll-behavior: smooth; }
-  body { @apply font-sans text-navy-950 bg-sand antialiased; }
-  h1, h2, h3, h4 { @apply font-display text-navy; }
-  /* Sichtbarer Tastatur-Fokus (Quality-Floor). */
+  body { @apply font-sans text-navy-950 bg-white antialiased; }
+  h1, h2, h3, h4 { @apply font-display text-navy tracking-tight; }
   a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-    @apply outline-none ring-2 ring-akzent ring-offset-2 ring-offset-sand;
+    @apply outline-none ring-2 ring-navy ring-offset-2 ring-offset-white;
   }
   @media (prefers-reduced-motion: reduce) {
     * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
@@ -19,65 +20,65 @@
 }
 
 @layer components {
-  .container-page { @apply mx-auto w-full max-w-6xl px-4 sm:px-6; }
+  .container-page { @apply mx-auto w-full max-w-6xl px-5 sm:px-6; }
 
-  /* Buttons */
+  /* Buttons — flach, kein Schatten */
   .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-ui font-medium text-sm transition
-          disabled:opacity-50 disabled:cursor-not-allowed; }
+          disabled:opacity-40 disabled:cursor-not-allowed; }
   .btn-primary { @apply btn bg-navy text-white hover:bg-navy-800; }
-  .btn-akzent  { @apply btn bg-akzent text-white hover:bg-akzent-700; }
-  .btn-ghost   { @apply btn bg-white text-navy ring-1 ring-navy/15 hover:bg-nebel; }
+  .btn-akzent  { @apply btn bg-akzent text-white hover:bg-akzent-700; }   /* nur DIE Hauptaktion */
+  .btn-ghost   { @apply btn bg-white text-navy ring-1 ring-black/10 hover:bg-black/[0.03]; }
   .btn-sm      { @apply px-3 py-1.5 text-xs; }
 
-  /* Cards & Surfaces */
-  .card { @apply rounded-xl2 bg-white shadow-card ring-1 ring-navy/5; }
-  .field { @apply w-full rounded-lg border-0 bg-white px-3.5 py-2.5 text-navy-950 ring-1 ring-inset ring-navy/15
-            placeholder:text-schiefer/60 focus:ring-2 focus:ring-navy; }
+  /* Flächen — Haarlinie statt Schatten */
+  .card { @apply rounded-xl bg-white ring-1 ring-black/[0.07]; }
+  .field { @apply w-full rounded-lg border-0 bg-white px-3.5 py-2.5 text-navy-950 ring-1 ring-inset ring-black/[0.12]
+            placeholder:text-schiefer/50 focus:ring-2 focus:ring-navy; }
   .label { @apply block text-sm font-medium text-navy mb-1.5; }
 
-  /* Status-Badges (Buchung + Abnahme) */
-  .badge { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-ui font-semibold; }
-  .badge-frei        { @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20; }
-  .badge-belegt      { @apply bg-akzent/10 text-akzent-700 ring-1 ring-akzent/20; }
-  .badge-blackout    { @apply bg-navy/10 text-navy ring-1 ring-navy/15; }
-  .badge-geschlossen { @apply bg-nebel text-schiefer ring-1 ring-stahl; }
-  .badge-vergangen   { @apply bg-nebel/70 text-schiefer/70 ring-1 ring-stahl/60; }
-  .badge-pending     { @apply bg-amber-50 text-amber-700 ring-1 ring-amber-600/20; }
-  .badge-confirmed   { @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20; }
-  .badge-rejected    { @apply bg-akzent/10 text-akzent-700 ring-1 ring-akzent/20; }
-  .badge-cancelled   { @apply bg-nebel text-schiefer ring-1 ring-stahl; }
-  .badge-passed      { @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20; }
-  .badge-rework      { @apply bg-amber-50 text-amber-700 ring-1 ring-amber-600/20; }
+  /* Status-Badges — dezent, farbig nur als Signal */
+  .badge { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-ui font-medium ring-1; }
+  .badge-frei        { @apply bg-emerald-50 text-emerald-700 ring-emerald-600/[0.15]; }
+  .badge-belegt      { @apply bg-akzent/[0.07] text-akzent-700 ring-akzent/[0.15]; }
+  .badge-blackout    { @apply bg-black/[0.04] text-navy ring-black/10; }
+  .badge-geschlossen { @apply bg-black/[0.03] text-schiefer ring-black/10; }
+  .badge-vergangen   { @apply bg-black/[0.03] text-schiefer/70 ring-black/[0.06]; }
+  .badge-pending     { @apply bg-amber-50 text-amber-700 ring-amber-600/[0.15]; }
+  .badge-confirmed   { @apply bg-emerald-50 text-emerald-700 ring-emerald-600/[0.15]; }
+  .badge-rejected    { @apply bg-akzent/[0.07] text-akzent-700 ring-akzent/[0.15]; }
+  .badge-cancelled   { @apply bg-black/[0.04] text-schiefer ring-black/10; }
+  .badge-passed      { @apply bg-emerald-50 text-emerald-700 ring-emerald-600/[0.15]; }
+  .badge-rework      { @apply bg-amber-50 text-amber-700 ring-amber-600/[0.15]; }
 
-  /* Nav */
-  .nav-link { @apply rounded-lg px-3 py-2 text-sm font-ui font-medium text-white/85 hover:bg-white/10 hover:text-white transition; }
-  .nav-link-active { @apply bg-white/15 text-white; }
+  /* Nav — dunkel auf hell */
+  .nav-link { @apply rounded-lg px-3 py-2 text-sm font-ui font-medium text-navy/60 hover:text-navy hover:bg-navy/[0.04] transition; }
+  .nav-link-active { @apply text-navy bg-navy/[0.06]; }
 
-  /* Kalender-Zellen */
-  .cal-cell { @apply relative rounded-lg p-2 min-h-[4.5rem] ring-1 ring-navy/5 bg-white; }
-  .slot-chip { @apply block w-full rounded-md px-1.5 py-1 text-[11px] font-ui font-semibold text-center transition; }
+  /* Kalender */
+  .cal-cell { @apply relative rounded-lg p-2 min-h-[4.5rem] ring-1 ring-black/[0.06] bg-white; }
+  .slot-chip { @apply block w-full rounded-md px-1.5 py-1 text-[11px] font-ui font-medium text-center transition; }
 
-  /* Dropdown-Menü (Header) */
-  .menu-item { @apply flex items-center gap-2 rounded-md px-3 py-2 text-sm font-ui text-navy-950 hover:bg-nebel transition; }
-  .menu-item-active { @apply bg-himmel-light/60 text-navy font-medium; }
+  /* Dropdown-Menü */
+  .menu-item { @apply flex items-center gap-2 rounded-md px-3 py-2 text-sm font-ui text-navy-950 hover:bg-black/[0.04] transition; }
+  .menu-item-active { @apply bg-navy/[0.06] text-navy font-medium; }
 
   /* Landing / Editorial */
-  .eyebrow { @apply inline-flex items-center gap-2 text-xs font-ui font-semibold uppercase tracking-[0.18em] text-himmel; }
+  .eyebrow { @apply inline-flex items-center gap-2 text-xs font-ui font-semibold uppercase tracking-[0.18em] text-schiefer; }
   .section { @apply py-16 sm:py-24; }
-  .lead { @apply text-lg sm:text-xl text-schiefer leading-relaxed; }
-  .feature-card { @apply rounded-xl2 bg-white p-6 ring-1 ring-navy/5 shadow-card; }
-  .step-num { @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-akzent text-white font-display text-lg; }
+  .lead { @apply text-lg text-schiefer leading-relaxed; }
+  .feature-card { @apply rounded-xl bg-white p-6 ring-1 ring-black/[0.07]; }
+  .step-num { @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full ring-1 ring-navy/30 text-navy font-ui font-medium; }
 
   /* Icon-Wrapper */
-  .ico { @apply inline-flex h-10 w-10 items-center justify-center rounded-lg bg-navy/5 text-navy; }
-  .ico-akzent { @apply inline-flex h-10 w-10 items-center justify-center rounded-lg bg-akzent/10 text-akzent; }
+  .ico { @apply inline-flex h-10 w-10 items-center justify-center rounded-lg bg-navy/[0.05] text-navy; }
+  .ico-akzent { @apply inline-flex h-10 w-10 items-center justify-center rounded-lg bg-akzent/[0.08] text-akzent; }
 
-  /* Airbnb-artige Detailseite */
-  .gallery-tile { @apply relative flex items-end overflow-hidden bg-gradient-to-br from-navy via-navy-800 to-himmel/50; }
-  .gallery-cap  { @apply relative z-10 m-3 rounded-md bg-navy-950/55 px-2.5 py-1 text-xs font-ui font-medium text-white backdrop-blur-sm; }
-  .book-card    { @apply rounded-xl2 bg-white p-6 ring-1 ring-navy/10 shadow-[0_6px_28px_-8px_rgba(3,0,83,0.25)]; }
+  /* Airbnb-artige Detailseite — minimal */
+  .gallery-tile { @apply relative flex items-end overflow-hidden bg-nebel; }
+  .gallery-cap  { @apply relative z-10 m-3 rounded bg-white/85 px-2 py-1 text-xs font-ui font-medium text-navy ring-1 ring-black/5 backdrop-blur-sm; }
+  .book-card    { @apply rounded-xl bg-white p-6 ring-1 ring-black/[0.09]; }
   .book-field   { @apply w-full bg-transparent px-3.5 py-2.5 text-sm text-navy-950 focus:outline-none; }
   .amenity-row  { @apply flex items-start gap-3 py-3; }
-  .divider-y    { @apply border-t border-nebel my-8; }
-  .pill         { @apply inline-flex items-center gap-1.5 rounded-full bg-nebel/70 px-3 py-1.5 text-sm text-navy-950 ring-1 ring-navy/5; }
+  .divider-y    { @apply border-t border-black/[0.07] my-8; }
+  .pill         { @apply inline-flex items-center gap-1.5 rounded-full bg-black/[0.04] px-3 py-1.5 text-sm text-navy-950 ring-1 ring-black/[0.06]; }
 }

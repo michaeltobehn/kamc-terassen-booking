@@ -12,11 +12,11 @@ page_header('Ausstattung „Lounge oben"', 'Das buchst du — inklusive der wich
 <div class="container-page grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
     <?php foreach ($items as $a): ?>
         <div class="card overflow-hidden flex flex-col">
-            <div class="aspect-[4/3] bg-gradient-to-br from-navy to-himmel/40 flex items-center justify-center">
+            <div class="aspect-[4/3] bg-nebel flex items-center justify-center">
                 <?php if ($a['image_path']): ?>
                     <img src="<?= e($a['image_path']) ?>" alt="<?= e($a['name']) ?>" class="w-full h-full object-cover">
                 <?php else: ?>
-                    <img src="/assets/img/kamc-logo.png" alt="" class="h-20 w-20 rounded-full opacity-80 ring-2 ring-white/30">
+                    <img src="/assets/img/kamc-logo.png" alt="" class="h-16 w-16 rounded-full opacity-30">
                 <?php endif; ?>
             </div>
             <div class="p-5 flex-1 flex flex-col">
