@@ -214,26 +214,36 @@ page_start('Lounge oben', $user, '', $user ? 'app' : 'public');
 
                 <form method="post" class="mt-4" x-ref="form">
                     <?= csrf_field() ?>
-                    <!-- Datum/Slot/Gäste in einem gerahmten Block (Airbnb-Stil) -->
-                    <div class="rounded-xl ring-1 ring-navy/15 divide-y divide-navy/10 overflow-hidden">
-                        <label class="block px-3.5 pt-2.5">
+                    <!-- Slot: nur zwei feste Slots -> Toggle mit Icons (Tag=hell, Abend=dunkel) -->
+                    <div class="mb-3">
+                        <span class="text-[11px] font-ui font-semibold uppercase tracking-wide text-navy">Slot wählen</span>
+                        <div class="mt-1.5 grid grid-cols-2 gap-2">
+                            <button type="button" @click="slot='tag'" aria-label="Tag-Slot bis 18 Uhr"
+                                    class="flex items-center justify-center gap-2 rounded-lg px-3 py-3 ring-1 transition"
+                                    :class="slot==='tag' ? 'bg-navy text-white ring-navy' : 'bg-white text-navy ring-black/[0.12] hover:bg-black/[0.03]'">
+                                <?= icon('sun','h-5 w-5') ?>
+                                <span class="text-left leading-tight"><span class="block text-sm font-medium">Tag</span><span class="block text-[11px]" :class="slot==='tag' ? 'text-white/70' : 'text-schiefer'">bis 18:00</span></span>
+                            </button>
+                            <button type="button" @click="slot='abend'" aria-label="Abend-Slot ab 18 Uhr"
+                                    class="flex items-center justify-center gap-2 rounded-lg px-3 py-3 ring-1 transition"
+                                    :class="slot==='abend' ? 'bg-navy text-white ring-navy' : 'bg-white text-navy ring-black/[0.12] hover:bg-black/[0.03]'">
+                                <?= icon('moon','h-5 w-5') ?>
+                                <span class="text-left leading-tight"><span class="block text-sm font-medium">Abend</span><span class="block text-[11px]" :class="slot==='abend' ? 'text-white/70' : 'text-schiefer'">ab 18:00</span></span>
+                            </button>
+                        </div>
+                        <input type="hidden" name="slot" :value="slot">
+                    </div>
+
+                    <!-- Datum + Gäste -->
+                    <div class="rounded-xl ring-1 ring-black/[0.12] divide-y divide-black/10 overflow-hidden">
+                        <label class="block px-3.5 pt-2.5 pb-1">
                             <span class="text-[11px] font-ui font-semibold uppercase tracking-wide text-navy">Datum</span>
                             <input type="date" name="booking_date" required class="book-field !px-0 !py-1" x-model="date" @change="check()" value="<?= e($prefill['booking_date']) ?>">
                         </label>
-                        <div class="grid grid-cols-2 divide-x divide-navy/10">
-                            <label class="block px-3.5 py-2">
-                                <span class="text-[11px] font-ui font-semibold uppercase tracking-wide text-navy">Slot</span>
-                                <select name="slot" required class="book-field !px-0 !py-1" x-model="slot">
-                                    <option value="">wählen</option>
-                                    <option value="tag" <?= $prefill['slot']==='tag'?'selected':'' ?>>Tag · bis 18:00</option>
-                                    <option value="abend" <?= $prefill['slot']==='abend'?'selected':'' ?>>Abend · ab 18:00</option>
-                                </select>
-                            </label>
-                            <label class="block px-3.5 py-2">
-                                <span class="text-[11px] font-ui font-semibold uppercase tracking-wide text-navy">Gäste</span>
-                                <input type="number" name="party_size" min="1" max="16" required placeholder="1–16" class="book-field !px-0 !py-1" value="<?= e($prefill['party_size']) ?>">
-                            </label>
-                        </div>
+                        <label class="block px-3.5 pt-2 pb-1.5">
+                            <span class="text-[11px] font-ui font-semibold uppercase tracking-wide text-navy">Gäste</span>
+                            <input type="number" name="party_size" min="1" max="16" required placeholder="1–16" class="book-field !px-0 !py-1" value="<?= e($prefill['party_size']) ?>">
+                        </label>
                     </div>
 
                     <!-- Nächste freie Tage (sichtbar ohne Login) -->
@@ -264,7 +274,7 @@ page_start('Lounge oben', $user, '', $user ? 'app' : 'public');
                             <span>Ich akzeptiere die <a href="/hausordnung.php" target="_blank" class="text-akzent hover:underline">Hausordnung</a> (v<?= e($hausVersion) ?>) — keine Musik, Selbstversorgung, Grill reinigen.</span>
                         </label>
                         <input type="text" name="purpose" maxlength="200" placeholder="Anlass (optional) — z. B. Geburtstag" class="field mt-3 !py-2 text-sm">
-                        <button type="submit" class="btn-akzent w-full mt-4 text-base py-3">Buchung anfragen</button>
+                        <button type="submit" class="btn-akzent w-full mt-4 text-base py-3" :disabled="!slot">Buchung anfragen</button>
                         <p class="mt-3 text-center text-xs text-schiefer">Kostenlos &amp; unverbindlich — die Hafenmeisterei bestätigt deine Anfrage.</p>
                     <?php else: ?>
                         <a href="/login.php" class="btn-akzent w-full mt-4 text-base py-3">Anmelden &amp; buchen</a>
