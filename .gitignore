@@ -19,3 +19,6 @@ Thumbs.db
 
 # --- Lokale Referenz/Starter (nicht Teil des Repos) ---
 /_docs/
+
+# --- Lokale Editor-/Preview-Konfiguration ---
+/.claude/

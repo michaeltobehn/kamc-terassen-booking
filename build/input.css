@@ -1,3 +1,59 @@
+/* KAMC · Lounge oben — Tailwind-Quelle. Build: npm run build:css -> public/assets/style.css */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..700;1,400&family=Roboto:wght@400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply font-sans text-navy-950 bg-sand antialiased; }
+  h1, h2, h3, h4 { @apply font-display text-navy; }
+  /* Sichtbarer Tastatur-Fokus (Quality-Floor). */
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    @apply outline-none ring-2 ring-akzent ring-offset-2 ring-offset-sand;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  }
+}
+
+@layer components {
+  .container-page { @apply mx-auto w-full max-w-6xl px-4 sm:px-6; }
+
+  /* Buttons */
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-ui font-medium text-sm transition
+          disabled:opacity-50 disabled:cursor-not-allowed; }
+  .btn-primary { @apply btn bg-navy text-white hover:bg-navy-800; }
+  .btn-akzent  { @apply btn bg-akzent text-white hover:bg-akzent-700; }
+  .btn-ghost   { @apply btn bg-white text-navy ring-1 ring-navy/15 hover:bg-nebel; }
+  .btn-sm      { @apply px-3 py-1.5 text-xs; }
+
+  /* Cards & Surfaces */
+  .card { @apply rounded-xl2 bg-white shadow-card ring-1 ring-navy/5; }
+  .field { @apply w-full rounded-lg border-0 bg-white px-3.5 py-2.5 text-navy-950 ring-1 ring-inset ring-navy/15
+            placeholder:text-schiefer/60 focus:ring-2 focus:ring-navy; }
+  .label { @apply block text-sm font-medium text-navy mb-1.5; }
+
+  /* Status-Badges (Buchung + Abnahme) */
+  .badge { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-ui font-semibold; }
+  .badge-frei        { @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20; }
+  .badge-belegt      { @apply bg-akzent/10 text-akzent-700 ring-1 ring-akzent/20; }
+  .badge-blackout    { @apply bg-navy/10 text-navy ring-1 ring-navy/15; }
+  .badge-geschlossen { @apply bg-nebel text-schiefer ring-1 ring-stahl; }
+  .badge-vergangen   { @apply bg-nebel/70 text-schiefer/70 ring-1 ring-stahl/60; }
+  .badge-pending     { @apply bg-amber-50 text-amber-700 ring-1 ring-amber-600/20; }
+  .badge-confirmed   { @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20; }
+  .badge-rejected    { @apply bg-akzent/10 text-akzent-700 ring-1 ring-akzent/20; }
+  .badge-cancelled   { @apply bg-nebel text-schiefer ring-1 ring-stahl; }
+  .badge-passed      { @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20; }
+  .badge-rework      { @apply bg-amber-50 text-amber-700 ring-1 ring-amber-600/20; }
+
+  /* Nav */
+  .nav-link { @apply rounded-lg px-3 py-2 text-sm font-ui font-medium text-white/85 hover:bg-white/10 hover:text-white transition; }
+  .nav-link-active { @apply bg-white/15 text-white; }
+
+  /* Kalender-Zellen */
+  .cal-cell { @apply relative rounded-lg p-2 min-h-[4.5rem] ring-1 ring-navy/5 bg-white; }
+  .slot-chip { @apply block w-full rounded-md px-1.5 py-1 text-[11px] font-ui font-semibold text-center transition; }
+}
