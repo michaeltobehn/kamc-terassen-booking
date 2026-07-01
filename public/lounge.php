@@ -52,17 +52,22 @@ $tiles = [
     ['slug' => 'stimmung-abends-hafen', 'cap' => 'Abends am Hafen'],
 ];
 
-/** Rendert eine Galerie-Kachel mit <picture> (WebP 800/1600 + JPEG-Fallback). */
-$galleryTile = function (array $t, bool $big): string {
+// Lightbox-Datensatz (Basis-Pfad + Bildunterschrift) für Alpine.
+$lb = array_map(fn ($t) => ['base' => '/assets/img/lounge/' . $t['slug'], 'cap' => $t['cap']], $tiles);
+
+/** Rendert eine klickbare Galerie-Kachel mit <picture> (WebP 800/1600 + JPEG-Fallback). */
+$galleryTile = function (array $t, bool $big, int $i): string {
     $base  = '/assets/img/lounge/' . $t['slug'];
     $cap   = e($t['cap']);
     $span  = $big ? 'col-span-2 row-span-2' : '';
     $sizes = $big ? '(min-width:1024px) 560px, 100vw' : '(min-width:1024px) 280px, 50vw';
-    return '<div class="gallery-tile ' . $span . '">'
+    return '<div class="gallery-tile cursor-pointer group ' . $span . '" role="button" tabindex="0"'
+        . ' @click="show(' . $i . ')" @keydown.enter="show(' . $i . ')" @keydown.space.prevent="show(' . $i . ')" aria-label="' . $cap . ' vergrößern">'
         . '<picture>'
         . '<source type="image/webp" srcset="' . $base . '-800.webp 800w, ' . $base . '-1600.webp 1600w" sizes="' . $sizes . '">'
-        . '<img src="' . $base . '-1600.jpg" alt="' . $cap . '" decoding="async" class="absolute inset-0 h-full w-full object-cover">'
+        . '<img src="' . $base . '-1600.jpg" alt="' . $cap . '" decoding="async" class="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]">'
         . '</picture>'
+        . '<span class="absolute inset-0 bg-navy-950/0 group-hover:bg-navy-950/10 transition"></span>'
         . '<span class="gallery-cap">' . $cap . '</span>'
         . '</div>';
 };
@@ -83,10 +88,38 @@ page_start('Lounge oben', $user, '', $user ? 'app' : 'public');
         </div>
     </div>
 
-    <!-- Galerie (1 groß + 4 klein) -->
-    <div class="grid grid-cols-4 grid-rows-2 gap-2 h-[52vh] max-h-[460px] rounded-xl overflow-hidden">
-        <?= $galleryTile($tiles[0], true) ?>
-        <?php for ($i = 1; $i <= 4; $i++) echo $galleryTile($tiles[$i], false); ?>
+    <!-- Galerie (1 groß + 4 klein) + Lightbox -->
+    <div x-data="loungeGallery(<?= e(json_encode($lb, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?>)">
+        <div class="relative grid grid-cols-4 grid-rows-2 gap-2 h-[52vh] max-h-[460px] rounded-xl overflow-hidden">
+            <?= $galleryTile($tiles[0], true, 0) ?>
+            <?php for ($i = 1; $i <= 4; $i++) echo $galleryTile($tiles[$i], false, $i); ?>
+            <button type="button" @click="show(0)"
+                    class="absolute bottom-3 right-3 z-10 inline-flex items-center gap-2 rounded-lg bg-white/95 px-3 py-1.5 text-sm font-ui font-medium text-navy ring-1 ring-black/10 hover:bg-white shadow-sm">
+                <?= icon('sparkle','h-4 w-4') ?> Alle Fotos
+            </button>
+        </div>
+
+        <!-- Lightbox -->
+        <div x-show="open" x-cloak
+             @keydown.escape.window="open=false" @keydown.arrow-right.window="next()" @keydown.arrow-left.window="prev()"
+             class="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4"
+             @click.self="open=false" role="dialog" aria-modal="true">
+            <button type="button" @click="open=false" aria-label="Schließen"
+                    class="absolute top-4 right-4 h-11 w-11 inline-flex items-center justify-center rounded-full bg-white/10 text-white text-xl hover:bg-white/20">✕</button>
+            <button type="button" @click.stop="prev()" aria-label="Zurück"
+                    class="absolute left-3 sm:left-6 h-12 w-12 inline-flex items-center justify-center rounded-full bg-white/10 text-white text-2xl hover:bg-white/20">‹</button>
+            <figure class="max-w-6xl">
+                <img :src="images[idx].base + '-1600.webp'" :alt="images[idx].cap"
+                     @click.stop
+                     class="mx-auto max-h-[82vh] max-w-full rounded-lg object-contain select-none">
+                <figcaption class="mt-3 text-center text-sm text-white/85">
+                    <span x-text="images[idx].cap"></span>
+                    <span class="text-white/50" x-text="' · ' + (idx+1) + ' / ' + images.length"></span>
+                </figcaption>
+            </figure>
+            <button type="button" @click.stop="next()" aria-label="Weiter"
+                    class="absolute right-3 sm:right-6 h-12 w-12 inline-flex items-center justify-center rounded-full bg-white/10 text-white text-2xl hover:bg-white/20">›</button>
+        </div>
     </div>
 
     <div class="mt-8 grid lg:grid-cols-3 gap-10 lg:gap-14 items-start">
@@ -237,6 +270,15 @@ page_start('Lounge oben', $user, '', $user ? 'app' : 'public');
 </div>
 
 <script>
+function loungeGallery(images) {
+    return {
+        open: false, idx: 0, images: images,
+        show(i) { this.idx = i; this.open = true; },
+        next() { this.idx = (this.idx + 1) % this.images.length; },
+        prev() { this.idx = (this.idx - 1 + this.images.length) % this.images.length; },
+        init() { this.$watch('open', v => { document.documentElement.style.overflow = v ? 'hidden' : ''; }); },
+    };
+}
 function booker(isUser) {
     return {
         date: <?= json_encode($prefill['booking_date']) ?>, slot: <?= json_encode($prefill['slot']) ?>,
