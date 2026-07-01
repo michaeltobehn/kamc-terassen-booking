@@ -64,6 +64,7 @@ page_start('Lounge oben', $user, '', $user ? 'app' : 'public');
             <span>·</span><span>Rheinauhafen Köln</span>
             <span>·</span><span>Terrasse + Innenbereich</span>
             <span>·</span><span>bis 16 Gäste</span>
+            <span>·</span><span class="inline-flex items-center gap-1 font-medium text-akzent whitespace-nowrap"><?= icon('mute','h-4 w-4') ?> ohne Musik</span>
         </div>
     </div>
 
@@ -96,6 +97,7 @@ page_start('Lounge oben', $user, '', $user ? 'app' : 'public');
                     ['anchor', 'Direkt am Rheinauhafen', 'Terrasse mit Blick aufs Wasser, ruhige Lage im Club.'],
                     ['sun', 'Zwei feste Slots', 'Tag (bis 18:00) oder Abend (18:00 bis Schließung) — keine Zeitwahl-Rechnerei.'],
                     ['sparkle', 'Grill inklusive', 'Gasgrill „Burnhard" inkl. Ersatz-Gasflasche steht bereit.'],
+                    ['mute', 'Ohne Musik', 'Keine Musik, keine Lautsprecher — Rücksicht auf Hafen & Nachbarn (rote Linie der Hausordnung).'],
                     ['shield', 'Kostenlos & fair', 'Kein Entgelt im Pilot — gleiche Regeln für alle Mitglieder.'],
                 ];
                 foreach ($highlights as $h): ?>
@@ -211,9 +213,10 @@ page_start('Lounge oben', $user, '', $user ? 'app' : 'public');
                     <?php endif; ?>
                 </form>
 
-                <div class="mt-5 pt-4 border-t border-nebel flex flex-wrap gap-2">
+                <div class="mt-5 pt-4 border-t border-black/[0.07] flex flex-wrap gap-2">
                     <span class="pill"><?= icon('users','h-4 w-4') ?> bis 16</span>
                     <span class="pill"><?= icon('sun','h-4 w-4') ?> Tag &amp; Abend</span>
+                    <span class="pill"><?= icon('mute','h-4 w-4') ?> ohne Musik</span>
                     <span class="pill"><?= icon('shield','h-4 w-4') ?> kostenlos</span>
                 </div>
             </div>

@@ -79,6 +79,7 @@ function icon(string $name, string $cls = 'h-5 w-5'): string
         'moon'     => '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
         'shield'   => '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
         'sparkle'  => '<path d="M12 3v18M3 12h18M5 5l14 14M19 5 5 19"/>',
+        'mute'     => '<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m23 9-6 6M17 9l6 6"/>',
     ];
     $inner = $p[$name] ?? '';
     return '<svg class="' . e($cls) . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $inner . '</svg>';
