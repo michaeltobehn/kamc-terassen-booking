@@ -81,6 +81,32 @@ function upcoming_confirmed(PDO $pdo, int $limit = 10): array
     return $stmt->fetchAll();
 }
 
+/** Nacharbeit / Beanstandung: Abnahmen mit Ergebnis 'rework' (Schäden/Streitfälle). */
+function rework_bookings(PDO $pdo): array
+{
+    $rows = $pdo->query(
+        "SELECT b.*, m.name AS member_name
+           FROM bookings b JOIN members m ON m.id = b.member_id
+          WHERE b.inspection_result = 'rework'
+          ORDER BY b.inspected_at DESC"
+    )->fetchAll();
+    foreach ($rows as &$r) {
+        $r['photos'] = inspection_photos($pdo, (int) $r['id']);
+    }
+    return $rows;
+}
+
+/** Historie: abgeschlossene/terminale Buchungen (passed | rejected | cancelled). */
+function finished_bookings(PDO $pdo, int $limit = 15): array
+{
+    return $pdo->query(
+        "SELECT b.*, m.name AS member_name
+           FROM bookings b JOIN members m ON m.id = b.member_id
+          WHERE b.inspection_result = 'passed' OR b.status IN ('rejected','cancelled')
+          ORDER BY b.updated_at DESC LIMIT " . (int) $limit
+    )->fetchAll();
+}
+
 function members_all(PDO $pdo): array
 {
     return $pdo->query('SELECT id, email, name, role, status, created_at FROM members ORDER BY name')->fetchAll();
