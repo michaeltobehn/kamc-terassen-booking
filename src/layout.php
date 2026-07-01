@@ -94,25 +94,40 @@ function icon(string $name, string $cls = 'h-5 w-5'): string
  */
 function nav_groups(array $user): array
 {
-    $g = [
-        'primary' => [
-            ['href' => '/kalender.php',        'label' => 'Kalender',        'key' => 'kalender',  'icon' => 'calendar'],
-            ['href' => '/meine-buchungen.php', 'label' => 'Meine Buchungen', 'key' => 'meine',     'icon' => 'list'],
-        ],
-        'info' => [
-            ['href' => '/ausstattung.php', 'label' => 'Ausstattung', 'key' => 'ausstattung', 'icon' => 'sparkle'],
-            ['href' => '/hausordnung.php', 'label' => 'Hausordnung', 'key' => 'hausordnung', 'icon' => 'info'],
-        ],
-        'hafen' => [],
-        'admin' => [],
-    ];
-    if (has_role($user, 'hafenmeister', 'admin')) {
-        $g['hafen'] = [
-            ['href' => '/hafenmeister/offene-buchungen.php', 'label' => 'Freigaben', 'key' => 'hm-offen',    'icon' => 'check'],
-            ['href' => '/hafenmeister/belegung.php',         'label' => 'Belegung',  'key' => 'hm-belegung', 'icon' => 'calendar'],
-            ['href' => '/hafenmeister/abnahmen.php',         'label' => 'Abnahmen',  'key' => 'hm-abnahmen', 'icon' => 'clipboard'],
+    $isStaff = has_role($user, 'hafenmeister', 'admin');
+
+    if ($isStaff) {
+        // Operative Perspektive: Freigaben/Belegung/Abnahmen sind die Hauptaufgaben.
+        $g = [
+            'is_staff' => true,
+            'primary' => [
+                ['href' => '/hafenmeister/offene-buchungen.php', 'label' => 'Freigaben', 'key' => 'hm-offen',    'icon' => 'check'],
+                ['href' => '/hafenmeister/belegung.php',         'label' => 'Belegung',  'key' => 'hm-belegung', 'icon' => 'calendar'],
+                ['href' => '/hafenmeister/abnahmen.php',         'label' => 'Abnahmen',  'key' => 'hm-abnahmen', 'icon' => 'clipboard'],
+            ],
+            'info' => [
+                ['href' => '/kalender.php',    'label' => 'Kalender',    'key' => 'kalender',    'icon' => 'calendar'],
+                ['href' => '/ausstattung.php', 'label' => 'Ausstattung', 'key' => 'ausstattung', 'icon' => 'sparkle'],
+                ['href' => '/hausordnung.php', 'label' => 'Hausordnung', 'key' => 'hausordnung', 'icon' => 'info'],
+            ],
+            'admin' => [],
+        ];
+    } else {
+        // Mitglieder-Perspektive: eigene Buchungen.
+        $g = [
+            'is_staff' => false,
+            'primary' => [
+                ['href' => '/kalender.php',        'label' => 'Kalender',        'key' => 'kalender', 'icon' => 'calendar'],
+                ['href' => '/meine-buchungen.php', 'label' => 'Meine Buchungen', 'key' => 'meine',    'icon' => 'list'],
+            ],
+            'info' => [
+                ['href' => '/ausstattung.php', 'label' => 'Ausstattung', 'key' => 'ausstattung', 'icon' => 'sparkle'],
+                ['href' => '/hausordnung.php', 'label' => 'Hausordnung', 'key' => 'hausordnung', 'icon' => 'info'],
+            ],
+            'admin' => [],
         ];
     }
+
     if (has_role($user, 'admin')) {
         $g['admin'] = [
             ['href' => '/admin/einstellungen.php', 'label' => 'Einstellungen', 'key' => 'admin-settings',  'icon' => 'cog'],
@@ -161,7 +176,7 @@ function page_start(string $title, ?array $user = null, string $active = '', str
 function render_app_header(array $user, string $active): void
 {
     $g = nav_groups($user);
-    $isStaff = $g['hafen'] || $g['admin'];
+    $isStaff = $g['is_staff'];
     $link = function (array $it, string $active) {
         $on = $active === $it['key'] ? 'nav-link-active' : '';
         return '<a href="' . e($it['href']) . '" class="nav-link ' . $on . '">' . e($it['label']) . '</a>';
@@ -188,32 +203,22 @@ function render_app_header(array $user, string $active): void
                     </div>
                 </div>
 
-                <?php if ($isStaff): ?>
-                <!-- Verwaltung-Dropdown -->
+                <?php if ($g['admin']): ?>
+                <!-- Admin-Dropdown (nur Vorstand) -->
                 <div class="relative" x-data="{o:false}" @click.outside="o=false">
-                    <button @click="o=!o" class="nav-link flex items-center gap-1">Verwaltung
+                    <button @click="o=!o" class="nav-link flex items-center gap-1">Admin
                         <svg class="h-3.5 w-3.5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
                     <div x-show="o" x-cloak x-transition class="absolute left-0 mt-2 w-64 card p-1.5 z-50">
-                        <?php if ($g['hafen']): ?>
-                            <div class="px-3 pt-1.5 pb-1 text-[11px] font-ui font-semibold uppercase tracking-wide text-schiefer">Hafenmeisterei</div>
-                            <?php foreach ($g['hafen'] as $it): ?>
-                                <a href="<?= e($it['href']) ?>" class="menu-item <?= $active === $it['key'] ? 'menu-item-active' : '' ?>"><?= icon($it['icon'], 'h-4 w-4 text-schiefer') ?><?= e($it['label']) ?></a>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                        <?php if ($g['admin']): ?>
-                            <div class="my-1 border-t border-nebel"></div>
-                            <div class="px-3 pt-1 pb-1 text-[11px] font-ui font-semibold uppercase tracking-wide text-schiefer">Admin</div>
-                            <?php foreach ($g['admin'] as $it): ?>
-                                <a href="<?= e($it['href']) ?>" class="menu-item <?= $active === $it['key'] ? 'menu-item-active' : '' ?>"><?= icon($it['icon'], 'h-4 w-4 text-schiefer') ?><?= e($it['label']) ?></a>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                        <?php foreach ($g['admin'] as $it): ?>
+                            <a href="<?= e($it['href']) ?>" class="menu-item <?= $active === $it['key'] ? 'menu-item-active' : '' ?>"><?= icon($it['icon'], 'h-4 w-4 text-schiefer') ?><?= e($it['label']) ?></a>
+                        <?php endforeach; ?>
                     </div>
                 </div>
                 <?php endif; ?>
             </nav>
 
             <div class="ml-auto flex items-center gap-2 sm:gap-3">
-                <a href="/lounge.php" class="btn-akzent btn-sm hidden sm:inline-flex"><?= icon('plus', 'h-4 w-4') ?> Buchen</a>
+                <?php if (!$isStaff): ?><a href="/lounge.php" class="btn-akzent btn-sm hidden sm:inline-flex"><?= icon('plus', 'h-4 w-4') ?> Buchen</a><?php endif; ?>
                 <!-- User-Menü -->
                 <div class="relative hidden lg:block" x-data="{o:false}" @click.outside="o=false">
                     <button @click="o=!o" class="nav-link flex items-center gap-2">
@@ -231,10 +236,8 @@ function render_app_header(array $user, string $active): void
 
         <!-- Mobile -->
         <nav x-show="mobile" x-cloak class="lg:hidden border-t border-black/[0.06] px-4 pb-4 pt-2 space-y-0.5">
-            <a href="/lounge.php" class="btn-akzent w-full mb-2"><?= icon('plus', 'h-4 w-4') ?> Buchen</a>
+            <?php if (!$isStaff): ?><a href="/lounge.php" class="btn-akzent w-full mb-2"><?= icon('plus', 'h-4 w-4') ?> Buchen</a><?php endif; ?>
             <?php foreach (array_merge($g['primary'], $g['info']) as $it) echo $link($it, $active); ?>
-            <?php if ($g['hafen']): ?><div class="pt-2 mt-1 border-t border-black/[0.06] text-[11px] uppercase tracking-wide text-schiefer px-3 py-1">Hafenmeisterei</div>
-                <?php foreach ($g['hafen'] as $it) echo $link($it, $active); endif; ?>
             <?php if ($g['admin']): ?><div class="pt-2 mt-1 border-t border-black/[0.06] text-[11px] uppercase tracking-wide text-schiefer px-3 py-1">Admin</div>
                 <?php foreach ($g['admin'] as $it) echo $link($it, $active); endif; ?>
             <a href="/logout.php" class="nav-link text-akzent mt-2">Abmelden</a>
