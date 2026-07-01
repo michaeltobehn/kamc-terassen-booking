@@ -27,8 +27,9 @@ module.exports = {
         stahl: '#C7C7C7',
       },
       fontFamily: {
-        // Headlines: Slab-Serif (Display) · Fliesstext: Open Sans · UI: Roboto
-        display: ['"Roboto Slab"', 'Georgia', 'serif'],
+        // 1:1 kamc.koeln: Headlines = Roboto (primary), Fliesstext = Open Sans (text).
+        // Roboto Slab ist auf der Seite definiert, wird aber praktisch nicht genutzt.
+        display: ['Roboto', 'system-ui', 'sans-serif'],
         sans: ['"Open Sans"', 'system-ui', 'sans-serif'],
         ui: ['Roboto', 'system-ui', 'sans-serif'],
       },
