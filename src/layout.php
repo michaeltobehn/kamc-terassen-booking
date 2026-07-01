@@ -47,6 +47,7 @@ function status_badge(string $status): string
         'pending' => 'wartet auf Freigabe', 'confirmed' => 'bestätigt',
         'rejected' => 'abgelehnt', 'cancelled' => 'storniert',
         'passed' => 'Abnahme ok', 'rework' => 'Nacharbeit',
+        'disputed' => 'Widerspruch', 'escalated' => 'beim Vorstand', 'resolved' => 'geklärt',
     ];
     return '<span class="badge badge-' . e($status) . '">' . e($labels[$status] ?? $status) . '</span>';
 }
@@ -145,6 +146,7 @@ function nav_groups(array $user): array
 
     if (has_role($user, 'admin')) {
         $g['admin'] = [
+            ['href' => '/admin/eskalationen.php',  'label' => 'Eskalationen',  'key' => 'admin-esc',       'icon' => 'shield'],
             ['href' => '/admin/einstellungen.php', 'label' => 'Einstellungen', 'key' => 'admin-settings',  'icon' => 'cog'],
             ['href' => '/admin/mitglieder.php',    'label' => 'Mitglieder',    'key' => 'admin-members',   'icon' => 'users'],
             ['href' => '/admin/ausstattung.php',   'label' => 'Ausstattung',   'key' => 'admin-amenities', 'icon' => 'sparkle'],

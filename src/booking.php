@@ -38,6 +38,13 @@ function create_booking(PDO $pdo, array $data, ?DateTimeImmutable $now = null): 
         return $errors;
     }
 
+    // Buchungssperre (Sanktion durch den Vorstand)?
+    $mstmt = $pdo->prepare('SELECT booking_blocked FROM members WHERE id = :id');
+    $mstmt->execute([':id' => (int) ($data['member_id'] ?? 0)]);
+    if ((int) $mstmt->fetchColumn() === 1) {
+        return ['Für dein Konto ist die Buchung derzeit gesperrt. Bitte wende dich an den Vorstand.'];
+    }
+
     $date = (string) $data['booking_date'];
     $slot = (string) $data['slot'];
 

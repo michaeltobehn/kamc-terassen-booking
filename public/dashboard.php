@@ -9,13 +9,15 @@ $isStaff = has_role($user, 'hafenmeister', 'admin');
 $first   = explode(' ', $user['name'])[0];
 
 if ($isStaff) {
+    $isAdmin  = has_role($user, 'admin');
     $pending  = pending_bookings($pdo);        // warten auf Freigabe
     $dueInsp  = open_inspections($pdo);         // Abnahme fällig
-    $rework   = rework_bookings($pdo);          // Nacharbeit / Beanstandung
+    $rework   = rework_bookings($pdo);          // Nacharbeit offen
+    $esc      = $isAdmin ? escalations($pdo) : []; // Eskalationen (Vorstand)
     $upcoming = upcoming_confirmed($pdo, 25);   // anstehend (bestätigt)
     $history  = finished_bookings($pdo, 15);    // Historie
-    $need     = count($pending) + count($dueInsp) + count($rework);
-    $defaultTab = count($pending) ? 'freigaben' : (count($dueInsp) ? 'abnahmen' : (count($rework) ? 'nacharbeit' : 'anstehend'));
+    $need     = count($pending) + count($dueInsp) + count($rework) + count($esc);
+    $defaultTab = count($pending) ? 'freigaben' : (count($dueInsp) ? 'abnahmen' : (count($rework) ? 'nacharbeit' : (count($esc) ? 'eskalationen' : 'anstehend')));
 
     // kleine Helfer für die Tabellen
     $slotCell = fn(array $b) => icon($b['slot'] === 'tag' ? 'sun' : 'moon', 'inline h-4 w-4 -mt-0.5 text-schiefer') . ' ' . ($b['slot'] === 'tag' ? 'Tag' : 'Abend');
@@ -48,8 +50,9 @@ page_start('Übersicht', $user, '');
         ['key' => 'freigaben',  'label' => 'Warten auf Freigabe', 'n' => count($pending),  'act' => true],
         ['key' => 'abnahmen',   'label' => 'Abnahme fällig',      'n' => count($dueInsp),  'act' => true],
         ['key' => 'nacharbeit', 'label' => 'Nacharbeit',          'n' => count($rework),   'act' => true],
-        ['key' => 'anstehend',  'label' => 'Anstehend',           'n' => count($upcoming), 'act' => false],
     ];
+    if ($isAdmin) { $tiles[] = ['key' => 'eskalationen', 'label' => 'Eskalationen', 'n' => count($esc), 'act' => true]; }
+    $tiles[] = ['key' => 'anstehend', 'label' => 'Anstehend', 'n' => count($upcoming), 'act' => false];
     ?>
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-6">
         <?php foreach ($tiles as $t): $hot = $t['act'] && $t['n'] > 0; ?>
@@ -72,9 +75,10 @@ page_start('Übersicht', $user, '');
             ['key' => 'freigaben',  'label' => 'Freigaben',   'n' => count($pending), 'act' => true],
             ['key' => 'abnahmen',   'label' => 'Abnahme fällig','n' => count($dueInsp), 'act' => true],
             ['key' => 'nacharbeit', 'label' => 'Nacharbeit',   'n' => count($rework),  'act' => true],
-            ['key' => 'anstehend',  'label' => 'Anstehend',    'n' => count($upcoming),'act' => false],
-            ['key' => 'historie',   'label' => 'Historie',     'n' => count($history), 'act' => false],
         ];
+        if ($isAdmin) { $tabs[] = ['key' => 'eskalationen', 'label' => 'Eskalationen', 'n' => count($esc), 'act' => true]; }
+        $tabs[] = ['key' => 'anstehend', 'label' => 'Anstehend', 'n' => count($upcoming), 'act' => false];
+        $tabs[] = ['key' => 'historie',  'label' => 'Historie',  'n' => count($history),  'act' => false];
         ?>
         <div class="flex flex-wrap gap-1 border-b border-black/[0.06] px-2 pt-2">
             <?php foreach ($tabs as $t): $badge = $t['act'] && $t['n'] > 0 ? 'bg-akzent/10 text-akzent-700 ring-1 ring-akzent/20' : 'bg-black/[0.05] text-schiefer'; ?>
@@ -156,6 +160,31 @@ page_start('Übersicht', $user, '');
                 </table>
                 <?php endif; ?>
             </div>
+
+            <!-- ESKALATIONEN (nur Admin) -->
+            <?php if ($isAdmin): ?>
+            <div x-show="tab==='eskalationen'" x-cloak class="overflow-x-auto">
+                <?php if (!$esc): ?><p class="p-6 text-center text-sm text-schiefer">Keine offenen Eskalationen. 🎉</p><?php else: ?>
+                <table class="w-full text-sm">
+                    <thead class="text-left text-schiefer border-b border-black/[0.06]"><tr>
+                        <th class="px-3 py-2 font-ui font-medium">Termin</th><th class="px-3 py-2 font-ui font-medium">Mitglied</th>
+                        <th class="px-3 py-2 font-ui font-medium">Fall</th><th class="px-3 py-2 font-ui font-medium">Beanstandung</th><th class="px-3 py-2"></th>
+                    </tr></thead>
+                    <tbody class="divide-y divide-nebel">
+                    <?php foreach ($esc as $b): ?>
+                        <tr class="hover:bg-sand/60 align-top">
+                            <td class="px-3 py-2.5 whitespace-nowrap"><span class="font-medium text-navy"><?= e(fmt_date($b['booking_date'])) ?></span> · <?= $slotCell($b) ?></td>
+                            <td class="px-3 py-2.5"><?= member_name($b['member_name']) ?></td>
+                            <td class="px-3 py-2.5"><?= status_badge($b['case_status']) ?></td>
+                            <td class="px-3 py-2.5 text-schiefer max-w-xs"><?= e($b['inspection_notes'] ?: '—') ?></td>
+                            <td class="px-3 py-2.5 text-right"><a href="/admin/eskalationen.php" class="btn-primary btn-sm">Klären</a></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
 
             <!-- ANSTEHEND -->
             <div x-show="tab==='anstehend'" x-cloak class="overflow-x-auto">

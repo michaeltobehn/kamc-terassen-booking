@@ -43,21 +43,115 @@ function cancel_booking(PDO $pdo, int $id, int $memberId): array|bool
 }
 
 /** Abnahme erfassen (passed|rework). */
-function record_inspection(PDO $pdo, int $id, int $inspectorId, string $result, string $notes = ''): array|bool
+function record_inspection(PDO $pdo, int $id, int $inspectorId, string $result, string $notes = '', ?string $reworkDue = null): array|bool
 {
     if (!in_array($result, ['passed', 'rework'], true)) {
         return ['Ungültiges Abnahme-Ergebnis.'];
     }
+    $case = $result === 'rework' ? 'rework' : 'none';
+    $due  = ($result === 'rework' && $reworkDue && preg_match('/^\d{4}-\d{2}-\d{2}$/', $reworkDue)) ? $reworkDue : null;
     $stmt = $pdo->prepare(
         "UPDATE bookings
-            SET inspection_result = :r, inspected_by = :by, inspected_at = :at, inspection_notes = :n
+            SET inspection_result = :r, inspected_by = :by, inspected_at = :at, inspection_notes = :n,
+                case_status = :cs, rework_due = :due
           WHERE id = :id AND status = 'confirmed'"
     );
     $stmt->execute([
         ':r' => $result, ':by' => $inspectorId, ':at' => now_utc(),
-        ':n' => $notes !== '' ? $notes : null, ':id' => $id,
+        ':n' => $notes !== '' ? $notes : null, ':cs' => $case, ':due' => $due, ':id' => $id,
     ]);
-    return $stmt->rowCount() === 1 ? true : ['Abnahme konnte nicht gespeichert werden.'];
+    if ($stmt->rowCount() !== 1) {
+        return ['Abnahme konnte nicht gespeichert werden.'];
+    }
+    log_inspection_event($pdo, $id, $inspectorId, $result, $notes);
+    return true;
+}
+
+/** Audit-Event zum Fall protokollieren. */
+function log_inspection_event(PDO $pdo, int $bookingId, ?int $actorId, string $type, string $note = ''): void
+{
+    $s = $pdo->prepare('INSERT INTO inspection_events (booking_id, actor_id, event_type, note) VALUES (:b, :a, :t, :n)');
+    $s->execute([':b' => $bookingId, ':a' => $actorId ?: null, ':t' => $type, ':n' => $note !== '' ? $note : null]);
+}
+
+/** Hafenmeister: nach Nacharbeit erneut abnehmen -> passed, Fall geschlossen. */
+function reinspect_pass(PDO $pdo, int $id, int $actorId, string $note = ''): array|bool
+{
+    $b = booking_by_id($pdo, $id);
+    if (!$b || !in_array($b['case_status'], ['rework', 'disputed'], true)) {
+        return ['Kein offener Nacharbeit-Fall.'];
+    }
+    $s = $pdo->prepare("UPDATE bookings SET inspection_result='passed', case_status='resolved', resolution='ok', resolved_by=:by, resolved_at=:at WHERE id=:id");
+    $s->execute([':by' => $actorId, ':at' => now_utc(), ':id' => $id]);
+    log_inspection_event($pdo, $id, $actorId, 'reinspect_pass', $note);
+    return true;
+}
+
+/** Hafenmeister: Fall an den Vorstand eskalieren. */
+function escalate_case(PDO $pdo, int $id, int $actorId, string $note): array|bool
+{
+    if (trim($note) === '') {
+        return ['Bitte einen Grund für die Eskalation angeben.'];
+    }
+    $b = booking_by_id($pdo, $id);
+    if (!$b || !in_array($b['case_status'], ['rework', 'disputed'], true)) {
+        return ['Kein offener Fall zum Eskalieren.'];
+    }
+    $pdo->prepare("UPDATE bookings SET case_status='escalated' WHERE id=:id")->execute([':id' => $id]);
+    log_inspection_event($pdo, $id, $actorId, 'escalate', $note);
+    return true;
+}
+
+/** Mitglied: einer Beanstandung widersprechen. */
+function member_dispute(PDO $pdo, int $id, int $memberId, string $note): array|bool
+{
+    if (trim($note) === '') {
+        return ['Bitte begründe deinen Widerspruch.'];
+    }
+    $s = $pdo->prepare("UPDATE bookings SET case_status='disputed' WHERE id=:id AND member_id=:m AND case_status='rework'");
+    $s->execute([':id' => $id, ':m' => $memberId]);
+    if ($s->rowCount() !== 1) {
+        return ['Widerspruch ist hier nicht (mehr) möglich.'];
+    }
+    log_inspection_event($pdo, $id, $memberId, 'dispute', $note);
+    return true;
+}
+
+/** Mitglied: Nacharbeit als erledigt melden (Signal an Hafenmeister). */
+function member_mark_done(PDO $pdo, int $id, int $memberId, string $note = ''): array|bool
+{
+    $b = booking_by_id($pdo, $id);
+    if (!$b || (int) $b['member_id'] !== $memberId || $b['case_status'] !== 'rework') {
+        return ['Das ist gerade nicht möglich.'];
+    }
+    log_inspection_event($pdo, $id, $memberId, 'member_done', $note);
+    return true;
+}
+
+/** Vorstand: Fall abschließen (+ optional Buchungssperre). */
+function resolve_case(PDO $pdo, int $id, int $adminId, string $resolution, string $note = '', bool $blockMember = false): array|bool
+{
+    if (!in_array($resolution, ['ok', 'kulanz', 'kosten', 'sperre'], true)) {
+        return ['Ungültige Auflösung.'];
+    }
+    $b = booking_by_id($pdo, $id);
+    if (!$b || !in_array($b['case_status'], ['rework', 'disputed', 'escalated'], true)) {
+        return ['Kein offener Fall.'];
+    }
+    $insp = in_array($resolution, ['ok', 'kulanz'], true) ? 'passed' : ($b['inspection_result'] ?: 'rework');
+    $s = $pdo->prepare("UPDATE bookings SET case_status='resolved', resolution=:res, resolved_by=:by, resolved_at=:at, inspection_result=:insp WHERE id=:id");
+    $s->execute([':res' => $resolution, ':by' => $adminId, ':at' => now_utc(), ':insp' => $insp, ':id' => $id]);
+    log_inspection_event($pdo, $id, $adminId, 'resolve', trim($resolution . ($note !== '' ? ': ' . $note : '')));
+    if ($blockMember || $resolution === 'sperre') {
+        set_member_blocked($pdo, (int) $b['member_id'], true);
+    }
+    return true;
+}
+
+function set_member_blocked(PDO $pdo, int $memberId, bool $blocked): void
+{
+    $s = $pdo->prepare('UPDATE members SET booking_blocked = :b WHERE id = :id');
+    $s->execute([':b' => $blocked ? 1 : 0, ':id' => $memberId]);
 }
 
 /* ---- Admin: Settings / Öffnungszeiten / Blackouts ---- */

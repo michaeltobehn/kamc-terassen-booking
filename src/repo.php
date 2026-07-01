@@ -81,19 +81,47 @@ function upcoming_confirmed(PDO $pdo, int $limit = 10): array
     return $stmt->fetchAll();
 }
 
-/** Nacharbeit / Beanstandung: Abnahmen mit Ergebnis 'rework' (Schäden/Streitfälle). */
+/** Nacharbeit offen: Fall-Status 'rework' (Hafenmeister-Zuständigkeit). */
 function rework_bookings(PDO $pdo): array
 {
     $rows = $pdo->query(
         "SELECT b.*, m.name AS member_name
            FROM bookings b JOIN members m ON m.id = b.member_id
-          WHERE b.inspection_result = 'rework'
-          ORDER BY b.inspected_at DESC"
+          WHERE b.case_status = 'rework'
+          ORDER BY b.rework_due IS NULL, b.rework_due ASC, b.inspected_at DESC"
     )->fetchAll();
     foreach ($rows as &$r) {
         $r['photos'] = inspection_photos($pdo, (int) $r['id']);
     }
     return $rows;
+}
+
+/** Eskalationen & Streitfälle (Vorstand): Fall-Status 'escalated' oder 'disputed'. */
+function escalations(PDO $pdo): array
+{
+    $rows = $pdo->query(
+        "SELECT b.*, m.name AS member_name, m.booking_blocked
+           FROM bookings b JOIN members m ON m.id = b.member_id
+          WHERE b.case_status IN ('escalated','disputed')
+          ORDER BY FIELD(b.case_status,'disputed','escalated'), b.inspected_at DESC"
+    )->fetchAll();
+    foreach ($rows as &$r) {
+        $r['photos'] = inspection_photos($pdo, (int) $r['id']);
+        $r['events'] = case_events($pdo, (int) $r['id']);
+    }
+    return $rows;
+}
+
+/** Verlauf/Audit eines Falls. */
+function case_events(PDO $pdo, int $bookingId): array
+{
+    $s = $pdo->prepare(
+        "SELECT e.*, a.name AS actor_name FROM inspection_events e
+      LEFT JOIN members a ON a.id = e.actor_id
+          WHERE e.booking_id = :b ORDER BY e.created_at ASC, e.id ASC"
+    );
+    $s->execute([':b' => $bookingId]);
+    return $s->fetchAll();
 }
 
 /** Historie: abgeschlossene/terminale Buchungen (passed | rejected | cancelled). */
