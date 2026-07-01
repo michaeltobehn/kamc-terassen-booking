@@ -18,6 +18,7 @@ return [
         'hausordnung_version' => '2026-1',
     ],
     'mail' => [
+        'transport' => 'smtp',       // 'smtp' (PHPMailer, empfohlen) | 'mail' | 'log' (Dev-Outbox)
         'smtp_host' => 'smtp.strato.de',
         'smtp_port' => 587,
         'smtp_user' => 'lounge@kamc.koeln',

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require __DIR__ . '/../../src/layout.php';
 require __DIR__ . '/../../src/actions.php';
+require __DIR__ . '/../../src/mail.php';
 
 $user = require_role('hafenmeister', 'admin');
 $pdo  = db();
@@ -30,6 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($up['saved'] > 0) { $msg .= ' ' . $up['saved'] . ' Foto(s) dokumentiert.'; }
             if ($up['errors']) { flash_set('error', implode(' ', array_unique($up['errors']))); }
         }
+        try {
+            if ($action === 'escalate') { notify_staff_case($pdo, $id, 'Eskalation an Vorstand'); }
+            else { notify_inspection($pdo, $id); }
+        } catch (Throwable $e) {}
         flash_set('success', $msg);
     } else {
         flash_set('error', implode(' ', (array) $res));

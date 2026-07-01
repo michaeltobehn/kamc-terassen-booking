@@ -3,6 +3,7 @@ declare(strict_types=1);
 require __DIR__ . '/../src/layout.php';
 require __DIR__ . '/../src/booking.php';
 require __DIR__ . '/../src/repo.php';
+require __DIR__ . '/../src/mail.php';
 
 /**
  * Listing-Detailseite „Lounge oben" im Airbnb-Stil: Galerie + zweispaltiges
@@ -35,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $user) {
     ];
     $res = create_booking($pdo, $data);
     if (is_int($res)) {
+        try { notify_booking_created($pdo, (int) $res); } catch (Throwable $e) { /* Mail darf Flow nicht brechen */ }
         flash_set('success', 'Anfrage eingegangen! Die Hafenmeisterei prüft deine Buchung.');
         header('Location: /meine-buchungen.php');
         exit;

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require __DIR__ . '/../../src/layout.php';
 require __DIR__ . '/../../src/actions.php';
+require __DIR__ . '/../../src/mail.php';
 
 $user = require_role('hafenmeister', 'admin');
 $pdo  = db();
@@ -13,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $note = (string) ($_POST['note'] ?? '');
     $res = decide_booking($pdo, $id, (int) $user['id'], $decision, $note);
     if ($res === true) {
+        try { notify_booking_decided($pdo, $id); } catch (Throwable $e) {}
         flash_set('success', $decision === 'confirmed' ? 'Buchung bestätigt. Schlüsselübergabe vorbereiten.' : 'Buchung abgelehnt. Das Mitglied wird informiert.');
     } else {
         flash_set('error', implode(' ', (array) $res));

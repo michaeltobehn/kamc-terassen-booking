@@ -98,6 +98,9 @@ function make_db(array $settings = []): PDO
             reason TEXT
         )
         SQL);
+    // Minimal-members (für Buchungssperre-Check in create_booking)
+    $pdo->exec('CREATE TABLE members (id INTEGER PRIMARY KEY, booking_blocked INTEGER NOT NULL DEFAULT 0)');
+    $pdo->exec('INSERT INTO members (id, booking_blocked) VALUES (1, 0)');
 
     $s = array_merge([
         'evening_start_local'  => '18:00:00',
@@ -240,6 +243,18 @@ $now = new DateTimeImmutable('2026-07-01 00:00:00', $utc);
 $res = create_booking($db, valid_input(['booking_date' => '2026-11-05', 'slot' => 'tag']), $now);
 truthy(is_array($res), 'Datum nach booking_window_end -> Fehler-Array');
 eq((int) $db->query('SELECT COUNT(*) FROM bookings')->fetchColumn(), 0, 'kein INSERT außerhalb des Fensters');
+
+
+/* ================================================================ *
+ * 5b) Gesperrtes Mitglied wird abgelehnt
+ * ================================================================ */
+section('Gesperrtes Mitglied kann nicht buchen');
+$db  = make_db();
+$db->exec('UPDATE members SET booking_blocked = 1 WHERE id = 1');
+$now = new DateTimeImmutable('2026-07-01 00:00:00', $utc);
+$res = create_booking($db, valid_input(['booking_date' => '2026-08-01', 'slot' => 'tag']), $now);
+truthy(is_array($res), 'gesperrtes Mitglied -> Fehler-Array');
+eq((int) $db->query('SELECT COUNT(*) FROM bookings')->fetchColumn(), 0, 'kein INSERT bei Sperre');
 
 
 /* ================================================================ *

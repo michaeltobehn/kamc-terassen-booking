@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require __DIR__ . '/../../src/layout.php';
 require __DIR__ . '/../../src/actions.php';
+require __DIR__ . '/../../src/mail.php';
 
 $user = require_role('admin');
 $pdo  = db();
@@ -16,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         (string) ($_POST['note'] ?? ''),
         !empty($_POST['block'])
     );
+    if ($res === true) { try { notify_case_resolved($pdo, (int) ($_POST['id'] ?? 0)); } catch (Throwable $e) {} }
     flash_set($res === true ? 'success' : 'error', $res === true ? 'Fall abgeschlossen.' : implode(' ', (array) $res));
     header('Location: /admin/eskalationen.php');
     exit;

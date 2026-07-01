@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require __DIR__ . '/../src/layout.php';
 require __DIR__ . '/../src/actions.php';
+require __DIR__ . '/../src/mail.php';
 
 $user = require_login();
 $pdo  = db();
@@ -15,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ok  = 'Buchung storniert — der Slot ist wieder frei.';
     } elseif ($action === 'dispute') {
         $res = member_dispute($pdo, $id, (int) $user['id'], (string) ($_POST['note'] ?? ''));
+        if ($res === true) { try { notify_staff_case($pdo, $id, 'Mitglied-Widerspruch'); } catch (Throwable $e) {} }
         $ok  = 'Widerspruch eingereicht — der Vorstand prüft.';
     } elseif ($action === 'member_done') {
         $res = member_mark_done($pdo, $id, (int) $user['id'], (string) ($_POST['note'] ?? ''));

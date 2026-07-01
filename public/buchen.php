@@ -29,6 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
     $result = create_booking($pdo, $data);
     if (is_int($result)) {
+        require_once __DIR__ . '/../src/mail.php';
+        try { notify_booking_created($pdo, (int) $result); } catch (Throwable $e) {}
         flash_set('success', 'Anfrage eingegangen! Die Hafenmeisterei prüft deine Buchung. Du bekommst Bescheid.');
         header('Location: /meine-buchungen.php');
         exit;

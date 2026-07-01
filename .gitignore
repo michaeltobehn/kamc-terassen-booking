@@ -28,3 +28,6 @@ Thumbs.db
 !/public/uploads/abnahmen/
 /public/uploads/abnahmen/*
 !/public/uploads/abnahmen/.gitkeep
+
+# --- Laufzeit-Logs / Mail-Outbox ---
+/logs/

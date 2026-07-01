@@ -267,20 +267,20 @@ function time_to_seconds(string $time): int
  */
 function opening_hours_for(PDO $pdo, int $weekday): array
 {
-    static $cache = [];
-    $key = spl_object_id($pdo);
-    if (!isset($cache[$key])) {
-        $cache[$key] = [];
-        $rows = $pdo->query('SELECT weekday, open_time, close_time, is_closed FROM opening_hours')->fetchAll();
-        foreach ($rows as $r) {
-            $cache[$key][(int) $r['weekday']] = [
+    static $cache = null;
+    $cache ??= new WeakMap();     // an die PDO-Objektlebensdauer gebunden (keine ID-Kollision)
+    if (!isset($cache[$pdo])) {
+        $map = [];
+        foreach ($pdo->query('SELECT weekday, open_time, close_time, is_closed FROM opening_hours')->fetchAll() as $r) {
+            $map[(int) $r['weekday']] = [
                 'open_time'  => (string) $r['open_time'],
                 'close_time' => (string) $r['close_time'],
                 'is_closed'  => (int) $r['is_closed'],
             ];
         }
+        $cache[$pdo] = $map;
     }
-    return $cache[$key][$weekday] ?? ['open_time' => '08:00:00', 'close_time' => '02:00:00', 'is_closed' => 0];
+    return $cache[$pdo][$weekday] ?? ['open_time' => '08:00:00', 'close_time' => '02:00:00', 'is_closed' => 0];
 }
 
 /**
@@ -290,14 +290,14 @@ function opening_hours_for(PDO $pdo, int $weekday): array
  */
 function settings_row(PDO $pdo): array
 {
-    static $cache = [];
-    $key = spl_object_id($pdo);
-    if (!isset($cache[$key])) {
+    static $cache = null;
+    $cache ??= new WeakMap();
+    if (!isset($cache[$pdo])) {
         $row = $pdo->query(
             'SELECT evening_start_local, lead_time_hours, pending_expiry_hours, max_party_size, booking_window_end
                FROM settings WHERE id = 1'
         )->fetch();
-        $cache[$key] = [
+        $cache[$pdo] = [
             'evening_start_local'  => (string) ($row['evening_start_local'] ?? '18:00:00'),
             'lead_time_hours'      => (int) ($row['lead_time_hours'] ?? 24),
             'pending_expiry_hours' => (int) ($row['pending_expiry_hours'] ?? 48),
@@ -305,7 +305,7 @@ function settings_row(PDO $pdo): array
             'booking_window_end'   => $row['booking_window_end'] ?? null,
         ];
     }
-    return $cache[$key];
+    return $cache[$pdo];
 }
 
 /** Löscht die Request-Caches (Öffnungszeiten/Settings) — v. a. für Tests. */
