@@ -22,20 +22,26 @@ CREATE TABLE IF NOT EXISTS amenities (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Seed: Items aus dem Briefing (nur einfügen, wenn Tabelle leer ist).
-INSERT INTO amenities (sort_order, name, description, notes, inspection_relevant, is_active)
+INSERT INTO amenities (sort_order, name, description, image_path, notes, inspection_relevant, is_active)
 SELECT * FROM (
   SELECT 10 AS sort_order, 'Location / Übersicht' AS name,
          'Das Obergeschoss der Lounge oben: Terrasse mit Rheinblick plus Innenbereich, rund 24 Sitzplätze.' AS description,
+         '/assets/img/lounge/hero-rheinauhafen-800.webp' AS image_path,
          'Rücksicht auf Nachbarschaft — keine Musik, keine Lautsprecher.' AS notes, 0 AS inspection_relevant, 1 AS is_active
   UNION ALL SELECT 20, 'Kühlschrank', 'Kühlschrank zur freien Nutzung während deiner Buchung.',
+         '/assets/img/lounge/couch-02-800.webp',
          'Nach dem Termin bitte komplett leeren — der Inhalt wird nicht gestellt.', 1, 1
   UNION ALL SELECT 30, 'Sitzgruppe', 'Gemütliche Lounge-Sitzgruppe im Innenbereich.',
+         '/assets/img/lounge/couch-01-800.webp',
          'Möbel nach dem Termin an den ursprünglichen Platz zurückstellen.', 1, 1
   UNION ALL SELECT 40, 'Esstisch mit Stühlen', 'Großer Esstisch mit Stühlen für gemeinsame Runden.',
+         '/assets/img/lounge/esstisch-800.webp',
          'Sauber hinterlassen, Stühle zurückstellen.', 1, 1
   UNION ALL SELECT 50, 'Deck Chairs', 'Liegestühle für die Terrasse.',
+         '/assets/img/lounge/aussicht-treppe-800.webp',
          'Bei Wind sichern; nach Nutzung zusammenklappen und verstauen.', 0, 1
   UNION ALL SELECT 60, 'Gasgrill „Burnhard"', 'Vom Verein gestellter Gasgrill inkl. Haupt- und Ersatz-Gasflasche.',
+         '/assets/img/lounge/grill-800.webp',
          'Grill nach Nutzung reinigen, auf Brandflecken prüfen, Terrasse kehren. Gas zudrehen.', 1, 1
 ) AS seed
 WHERE NOT EXISTS (SELECT 1 FROM amenities);

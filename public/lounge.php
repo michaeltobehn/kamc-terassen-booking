@@ -43,14 +43,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $user) {
     $prefill = ['booking_date' => $data['booking_date'], 'slot' => $data['slot'], 'party_size' => (string) ($_POST['party_size'] ?? '')];
 }
 
-// Galerie-Kacheln (Platzhalter bis echte Fotos vorliegen; Airbnb-1+4-Grid).
+// Galerie-Kacheln (echte Fotos; Airbnb-1+4-Grid).
 $tiles = [
-    ['cap' => 'Terrasse & Rheinblick', 'icon' => 'anchor'],
-    ['cap' => 'Innenbereich',          'icon' => 'sparkle'],
-    ['cap' => 'Gasgrill „Burnhard"',   'icon' => 'sun'],
-    ['cap' => 'Sitzgruppe',            'icon' => 'users'],
-    ['cap' => 'Deck Chairs',           'icon' => 'moon'],
+    ['slug' => 'hero-rheinauhafen',     'cap' => 'Terrasse & Rheinblick'],
+    ['slug' => 'couch-01',              'cap' => 'Sitzgruppe'],
+    ['slug' => 'esstisch-grill',        'cap' => 'Esstisch & Grill'],
+    ['slug' => 'grill',                 'cap' => 'Gasgrill „Burnhard"'],
+    ['slug' => 'stimmung-abends-hafen', 'cap' => 'Abends am Hafen'],
 ];
+
+/** Rendert eine Galerie-Kachel mit <picture> (WebP 800/1600 + JPEG-Fallback). */
+$galleryTile = function (array $t, bool $big): string {
+    $base  = '/assets/img/lounge/' . $t['slug'];
+    $cap   = e($t['cap']);
+    $span  = $big ? 'col-span-2 row-span-2' : '';
+    $sizes = $big ? '(min-width:1024px) 560px, 100vw' : '(min-width:1024px) 280px, 50vw';
+    return '<div class="gallery-tile ' . $span . '">'
+        . '<picture>'
+        . '<source type="image/webp" srcset="' . $base . '-800.webp 800w, ' . $base . '-1600.webp 1600w" sizes="' . $sizes . '">'
+        . '<img src="' . $base . '-1600.jpg" alt="' . $cap . '" decoding="async" class="absolute inset-0 h-full w-full object-cover">'
+        . '</picture>'
+        . '<span class="gallery-cap">' . $cap . '</span>'
+        . '</div>';
+};
 
 page_start('Lounge oben', $user, '', $user ? 'app' : 'public');
 ?>
@@ -69,13 +84,10 @@ page_start('Lounge oben', $user, '', $user ? 'app' : 'public');
     </div>
 
     <!-- Galerie (1 groß + 4 klein) -->
-    <div class="grid grid-cols-4 grid-rows-2 gap-2 h-[52vh] max-h-[460px] rounded-xl2 overflow-hidden">
-        <div class="gallery-tile col-span-2 row-span-2"><?= icon($tiles[0]['icon'], 'absolute right-4 top-4 h-8 w-8 text-navy/15') ?><span class="gallery-cap"><?= e($tiles[0]['cap']) ?></span></div>
-        <?php for ($i = 1; $i <= 4; $i++): ?>
-            <div class="gallery-tile"><?= icon($tiles[$i]['icon'], 'absolute right-3 top-3 h-6 w-6 text-navy/15') ?><span class="gallery-cap"><?= e($tiles[$i]['cap']) ?></span></div>
-        <?php endfor; ?>
+    <div class="grid grid-cols-4 grid-rows-2 gap-2 h-[52vh] max-h-[460px] rounded-xl overflow-hidden">
+        <?= $galleryTile($tiles[0], true) ?>
+        <?php for ($i = 1; $i <= 4; $i++) echo $galleryTile($tiles[$i], false); ?>
     </div>
-    <p class="mt-2 text-xs text-schiefer">Fotos folgen — Platzhalter im KAMC-Look. Echte Aufnahmen von Terrasse, Grill &amp; Innenbereich lassen sich pro Ausstattungs-Item pflegen.</p>
 
     <div class="mt-8 grid lg:grid-cols-3 gap-10 lg:gap-14 items-start">
         <!-- LINKS: Inhalt -->
